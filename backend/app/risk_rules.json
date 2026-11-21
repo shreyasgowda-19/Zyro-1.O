@@ -1,0 +1,79 @@
+{
+  "rules_version": "1.0.0",
+  "bands": {
+    "low": [0, 39],
+    "medium": [40, 69],
+    "high": [70, 100]
+  },
+  "rules": {
+    "R1": {
+      "name": "Unusual amount",
+      "points": 25,
+      "min_sample_size": 5,
+      "max_history_size": 30,
+      "multiplier": 3
+    },
+    "R2": {
+      "name": "New payee",
+      "points": 15,
+      "cold_start_points": 7,
+      "cold_start_threshold": 5
+    },
+    "R3": {
+      "name": "Unusual hour",
+      "points": 10,
+      "start_hour": 0,
+      "end_hour": 5
+    },
+    "R4": {
+      "name": "High velocity",
+      "points": 25,
+      "window_seconds": 300,
+      "personal_threshold": 3,
+      "business_threshold": 8
+    },
+    "R5": {
+      "name": "New synthetic device or city",
+      "points": 15
+    },
+    "R6": {
+      "name": "Flagged payee",
+      "points": 40
+    },
+    "R7": {
+      "name": "Near threshold or repeat pattern",
+      "points": 10,
+      "thresholds_paise": [1000000, 5000000, 10000000],
+      "margin_pct": 95,
+      "repeat_count": 3,
+      "repeat_window_seconds": 86400
+    },
+    "R8": {
+      "name": "Scam language signal",
+      "points": 15,
+      "phrases": [
+        "urgent",
+        "refund",
+        "lottery",
+        "kyc update",
+        "prize",
+        "cashback",
+        "tax refund",
+        "electricity bill",
+        "account blocked",
+        "sim blocked",
+        "customs clearance",
+        "win money"
+      ]
+    },
+    "R9": {
+      "name": "Drains balance",
+      "points": 15,
+      "threshold_pct": 80
+    },
+    "R10": {
+      "name": "Unknown collect request",
+      "points": 30
+    }
+  }
+}

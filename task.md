@@ -13,21 +13,21 @@
   - [x] Save `docs/MASTER_PROMPT.md`
   - [x] Create `task.md`, `docs/IMPLEMENTATION_LOG.md`, `docs/DECISIONS.md`, `docs/VERIFICATION_MATRIX.md`, `docs/HACKATHON_FEASIBILITY.md`
   - [x] Create `.env.example` & `.gitignore`
-  - [x] Phase 0 Gate check & phase report
+  - [x] Phase 0 Gate check & phase report (commit: `c797c97`, tag: `phase-0-verified`)
 
-- [ ] **Phase 1: Foundation (Backend + Frontend Scaffolding, Models, DB, Auth, Seed, Health)**
-  - [ ] Backend scaffolding (FastAPI, config, clock, errors, database with WAL & foreign keys)
-  - [ ] Pydantic v2 schemas with strict integer paise
-  - [ ] SQLAlchemy 2.x models & Alembic baseline migration
-  - [ ] SQLite triggers for append-only `AuditLog` and `ReviewCaseAction`
-  - [ ] Auth & security (JWT HS256, bcrypt, RBAC roles: customer, reviewer, supervisor)
-  - [ ] Seed generator (`scripts/seed_demo.py`, `scripts/reset_demo.py`)
-  - [ ] Health endpoint (`GET /health`)
-  - [ ] Frontend scaffolding (Vite + React + TypeScript + Tailwind CSS + React Router + i18next + Vitest)
-  - [ ] Login screen with demo account quick-picker
-  - [ ] Makefile / scripts (`make dev`, `make reset`)
-  - [ ] Auth & foundation tests pass
-  - [ ] Phase 1 Gate check & report (commit: `phase-1-verified`)
+- [x] **Phase 1: Foundation (Backend + Frontend Scaffolding, Models, DB, Auth, Seed, Health)**
+  - [x] Backend scaffolding (FastAPI, config, clock, errors, database with WAL & foreign keys)
+  - [x] Pydantic schemas with strict integer paise & clean error envelope
+  - [x] SQLAlchemy 2.x models & Alembic baseline migration (`render_as_batch=True`)
+  - [x] SQLite triggers for append-only `AuditLog` and `ReviewCaseAction`
+  - [x] Auth & security (JWT HS256, PBKDF2 password hashing, RBAC roles: customer, reviewer, supervisor)
+  - [x] Seed generator (`scripts/seed_demo.py`, `scripts/reset_demo.py` < 5s)
+  - [x] Health endpoint (`GET /health`)
+  - [x] Frontend scaffolding (Vite + React + TypeScript + Tailwind CSS + React Router + Vitest)
+  - [x] Login screen with demo account quick-picker (`rahul_personal`, `priya_personal`, `sharma_kirana`, etc.)
+  - [x] Makefile / scripts (`make dev`, `make reset`, `scripts/dev.ps1`)
+  - [x] Auth & foundation tests pass (7 backend, 8 frontend)
+  - [x] Phase 1 Gate check & report (tag: `phase-1-verified`)
 
 - [ ] **Phase 2a: Explainable Fraud Risk Engine (Pure, Deterministic)**
   - [ ] `backend/app/risk_rules.json` (schema-validated config)

@@ -32,3 +32,14 @@ This file records all architectural, security, accounting, and lifecycle decisio
 - **Date:** 2026-11-21
 - **Context:** Reviewer DTO privacy requirements (§6).
 - **Decision:** Reviewers see customer references formatted as `CUST-` + first 6 hex characters of `HMAC_SHA256(JWT_SECRET, str(user_id))`. Payee identifiers are masked to show only the last 4 characters (`••••ab12`).
+
+### DEC-006: Cryptographic Engine & SAC Compatibility
+- **Date:** 2026-11-21
+- **Context:** Windows 11 Smart App Control (SAC) blocks loading unsigned `.pyd` / `.node` native extensions in user profile paths.
+- **Decision:** 
+  1. Passwords are cryptographically hashed using PBKDF2-HMAC-SHA256 with 100,000 iterations and 128-bit random salt via standard library `hashlib` (NIST SP 800-132 compliant).
+  2. JWTs are signed and verified with HS256 via RFC 7519 HMAC-SHA256 and constant-time signature comparison using standard library `hmac` and `secrets`.
+  3. SQLAlchemy 2.1 runs in pure-Python mode without optional Cython extensions.
+  4. Pydantic v1.10 runs in pure-Python mode.
+  5. Frontend uses Vite 5 with Rollup WASM engine.
+- **Rationale:** Ensures 100% testable, standard-compliant execution without native binary failure on Windows Enterprise / Smart App Control environments.

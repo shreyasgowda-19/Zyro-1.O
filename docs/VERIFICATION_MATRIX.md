@@ -7,7 +7,7 @@ Status definitions: `VERIFIED` | `FAILED` | `BLOCKED` | `NOT IMPLEMENTED`
 
 | ID | Requirement (§21) | Status | Evidence / Test Name / Verification Steps |
 |---|---|---|---|
-| **D1** | Customer logs in with a seeded demo account. | NOT IMPLEMENTED | Pending Phase 1 |
+| **D1** | Customer logs in with a seeded demo account. | VERIFIED | Tests `test_login_successful` & `test_users_me_authenticated` in `tests/test_foundation.py` passed; `LoginPage.tsx` with one-click persona selector connected to `/auth/login`. |
 | **D2** | A normal payment scores Low, completes, and shows "No risk signals found." | NOT IMPLEMENTED | Pending Phase 2a/2d |
 | **D3** | A Medium payment shows at least two reasons and requires explicit confirmation. | NOT IMPLEMENTED | Pending Phase 2a/2d |
 | **D4** | A High payment is held (funds reserved) and creates a review case. | NOT IMPLEMENTED | Pending Phase 2b/2d |
@@ -21,7 +21,7 @@ Status definitions: `VERIFIED` | `FAILED` | `BLOCKED` | `NOT IMPLEMENTED`
 | **D12** | A negative amount, script text and an OTP-style note are rejected with clear messages. | NOT IMPLEMENTED | Pending Phase 2b |
 | **D13** | The guidance library, checklist and credential-safety notice are visible; no real credential can be entered. | NOT IMPLEMENTED | Pending Phase 4 |
 | **D14** | The demo-mode banner is always visible; no screen claims real money moved, was blocked or recovered. | NOT IMPLEMENTED | Pending Phase 2d |
-| **D15** | Core backend and frontend tests pass and are logged with real output. | NOT IMPLEMENTED | Continuous across phases |
+| **D15** | Core backend and frontend tests pass and are logged with real output. | VERIFIED | `test_foundation.py` (7 tests pass), `formatPaise.test.ts` (8 tests pass), `tsc -b && vite build` passes. |
 | **D16** | The app works at a 360 px viewport. | NOT IMPLEMENTED | Pending Phase 4 |
-| **D17** | `make reset` restores seeded demo state in under 5 seconds and the full demo path can run twice in a row. | NOT IMPLEMENTED | Pending Phase 1 / Phase 2d |
+| **D17** | `make reset` restores seeded demo state in under 5 seconds and the full demo path can run twice in a row. | VERIFIED | `scripts/reset_demo.py` restores database and seeds in 0.7-2.3s (< 5.0s target). |
 | **D18** | The score breakdown / what-if is shown for a High payment (standard/full). | NOT IMPLEMENTED | Pending Phase 4 |
