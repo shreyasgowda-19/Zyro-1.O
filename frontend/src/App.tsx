@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { ShieldAlert } from 'lucide-react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { Navbar } from './components/layout/Navbar';
@@ -12,6 +13,53 @@ import { NewPaymentPage } from './pages/NewPaymentPage';
 import { PaymentResultPage } from './pages/PaymentResultPage';
 import { BudgetsPage } from './pages/BudgetsPage';
 import { LearnPage } from './pages/LearnPage';
+
+const AccessDenied: React.FC<{ userRole: string }> = ({ userRole }) => {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+  const isCustomerAttemptingStaff = userRole === 'customer';
+
+  return (
+    <div className="min-h-[calc(100vh-80px)] flex items-center justify-center bg-slate-900 px-4 py-12">
+      <div className="max-w-md w-full bg-slate-800 border border-rose-500/40 rounded-2xl p-8 text-center shadow-2xl">
+        <div className="w-16 h-16 mx-auto rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 mb-5">
+          <ShieldAlert className="w-8 h-8" />
+        </div>
+        <h2 className="text-xl font-bold text-white mb-2">
+          {isCustomerAttemptingStaff ? 'Restricted Internal Operations Area' : 'Customer Banking Area Restricted'}
+        </h2>
+        <p className="text-xs text-slate-300 mb-6 leading-relaxed">
+          {isCustomerAttemptingStaff ? (
+            <>
+              Access Denied: The <strong>Fraud Review Console</strong> is strictly restricted to authorized fraud analysts and compliance supervisors. Customer accounts cannot enter or inspect internal review queues.
+            </>
+          ) : (
+            <>
+              Fraud review and compliance personnel cannot access customer personal banking dashboards to preserve separation of duties.
+            </>
+          )}
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <button
+            onClick={() => navigate(userRole === 'customer' ? '/dashboard' : '/review')}
+            className="px-4 py-2.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold transition"
+          >
+            {userRole === 'customer' ? '← Return to My Dashboard' : '← Return to Review Queue'}
+          </button>
+          <button
+            onClick={() => {
+              logout();
+              navigate(isCustomerAttemptingStaff ? '/login/reviewer' : '/login/customer');
+            }}
+            className="px-4 py-2.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-medium transition"
+          >
+            {isCustomerAttemptingStaff ? 'Sign In as Staff →' : 'Sign In as Customer →'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> = ({ children, roles }) => {
   const { user, loading } = useAuth();
@@ -32,7 +80,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> 
   }
 
   if (roles && !roles.includes(user.role)) {
-    return <Navigate to={user.role === 'customer' ? '/dashboard' : '/review'} replace />;
+    return <AccessDenied userRole={user.role} />;
   }
 
   return <>{children}</>;
