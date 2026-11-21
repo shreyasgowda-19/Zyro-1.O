@@ -5,13 +5,14 @@ from pydantic import BaseSettings, validator
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 CANONICAL_DB_PATH = (BASE_DIR / "payguard.db").as_posix()
+DEVELOPMENT_JWT_SECRET = "demo-secret-key-payguard-360-replace-in-production-long-secure"
 
 class Settings(BaseSettings):
     HOST: str = "127.0.0.1"
     PORT: int = 8000
     ENVIRONMENT: str = "development"
     CORS_ORIGINS: Union[str, List[str]] = ["http://localhost:5173", "http://127.0.0.1:5173"]
-    JWT_SECRET: str = "demo-secret-key-payguard-360-replace-in-production-long-secure"
+    JWT_SECRET: str = DEVELOPMENT_JWT_SECRET
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRATION_MINUTES: int = 30
     DATABASE_URL: str = f"sqlite:///{CANONICAL_DB_PATH}"

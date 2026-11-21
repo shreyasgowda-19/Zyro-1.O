@@ -4,10 +4,10 @@ import { ShieldCheck, User, AlertCircle, Lock, ArrowRight, ShieldAlert, Building
 import { useAuth } from '../contexts/AuthContext';
 
 export const CustomerLoginPage: React.FC = () => {
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
   const navigate = useNavigate();
-  const [username, setUsername] = useState('rahul_personal');
-  const [password, setPassword] = useState('password123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -20,9 +20,10 @@ export const CustomerLoginPage: React.FC = () => {
       if (loggedUser.role === 'customer') {
         navigate('/dashboard');
       } else {
-        // Logged in with staff credentials on customer portal
-        setError(`Bank Staff Account detected (${loggedUser.role}). Redirecting to Banking Portal...`);
-        setTimeout(() => navigate('/review'), 1200);
+        // Do not leave a staff session active on the customer sign-in page.
+        logout();
+        setError(`This is a ${loggedUser.role} account. Redirecting to the Banking Portal...`);
+        setTimeout(() => navigate('/login/banking'), 1200);
       }
     } catch (err: any) {
       setError(err?.message || 'Login failed. Please check your credentials.');
@@ -87,7 +88,7 @@ export const CustomerLoginPage: React.FC = () => {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="e.g. rahul_personal"
+                  placeholder="Enter your username"
                   className="w-full text-xs pl-9 pr-3 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
                   required
                 />
@@ -106,7 +107,7 @@ export const CustomerLoginPage: React.FC = () => {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
+                  placeholder="Enter your password"
                   className="w-full text-xs pl-9 pr-3 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
                   required
                 />
@@ -131,6 +132,10 @@ export const CustomerLoginPage: React.FC = () => {
           </form>
 
           <div className="mt-6 pt-5 border-t border-slate-100 text-center space-y-2">
+            <p className="text-[11px] text-slate-500">
+              New here?{' '}
+              <Link to="/register" className="font-semibold text-teal-700 hover:underline">Create a customer account</Link>
+            </p>
             <p className="text-[11px] text-slate-500">
               Bank Officer or Branch Manager?{' '}
               <Link to="/login/banking" className="font-semibold text-indigo-600 hover:underline">

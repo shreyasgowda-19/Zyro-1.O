@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from sqlalchemy import (
-    Column, Integer, String, Boolean, DateTime, ForeignKey,
+    Column, Integer, String, Boolean, DateTime, Date, ForeignKey,
     Text, UniqueConstraint, CheckConstraint, Index
 )
 from sqlalchemy.orm import relationship
@@ -31,6 +31,7 @@ class User(Base):
     budgets = relationship("Budget", back_populates="user", cascade="all, delete-orphan")
     savings_goals = relationship("SavingsGoal", back_populates="user", cascade="all, delete-orphan")
     alerts = relationship("Alert", back_populates="user", cascade="all, delete-orphan")
+    tracked_accounts = relationship("TrackedAccount", back_populates="user", cascade="all, delete-orphan")
 
 class Account(Base):
     __tablename__ = "accounts"
@@ -44,6 +45,28 @@ class Account(Base):
     )
 
     user = relationship("User", back_populates="account")
+
+class TrackedAccount(Base):
+    """User-entered external account snapshot; never used by the simulated payment ledger."""
+    __tablename__ = "tracked_accounts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    institution_name = Column(String(80), nullable=False)
+    account_name = Column(String(50), nullable=False)
+    account_type = Column(String(20), nullable=False)
+    last_four = Column(String(4), nullable=True)
+    reported_balance_paise = Column(Integer, nullable=False, default=0)
+    balance_as_of = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+
+    __table_args__ = (
+        CheckConstraint("account_type IN ('savings', 'current', 'cash', 'other')", name="check_tracked_account_type"),
+        CheckConstraint("last_four IS NULL OR length(last_four) = 4", name="check_tracked_account_last_four"),
+        CheckConstraint("reported_balance_paise BETWEEN -1000000000000 AND 1000000000000", name="check_tracked_account_balance"),
+    )
+
+    user = relationship("User", back_populates="tracked_accounts")
 
 class Payee(Base):
     __tablename__ = "payees"
@@ -76,6 +99,7 @@ class Transaction(Base):
     method = Column(String(30), nullable=False)  # 'upi', 'card', 'netbanking', 'wallet', 'collect_approval'
     status = Column(String(30), nullable=False)  # 'pending', 'awaiting_confirmation', 'held', 'escalated', 'completed', 'cancelled', 'released'
     note = Column(String(140), nullable=True)
+    import_fingerprint = Column(String(64), nullable=True)
     synthetic_device_tag = Column(String(50), nullable=True)
     synthetic_city_tag = Column(String(50), nullable=True)
     created_at = Column(DateTime(timezone=True), default=utcnow, nullable=False)
@@ -86,6 +110,7 @@ class Transaction(Base):
         CheckConstraint("source IN ('payment', 'manual')", name="check_tx_source"),
         CheckConstraint("method IN ('upi', 'card', 'netbanking', 'wallet', 'collect_approval')", name="check_tx_method"),
         CheckConstraint("status IN ('pending', 'awaiting_confirmation', 'held', 'escalated', 'completed', 'cancelled', 'released')", name="check_tx_status"),
+        UniqueConstraint("user_id", "import_fingerprint", name="uq_tx_user_import_fingerprint"),
         Index("idx_tx_user_created", "user_id", "created_at"),
         Index("idx_tx_user_status", "user_id", "status"),
     )
@@ -260,4 +285,23 @@ class IdempotencyRecord(Base):
 
     __table_args__ = (
         UniqueConstraint("user_id", "key", name="uq_user_idempotency_key"),
+    )
+
+class StatementRequest(Base):
+    __tablename__ = "statement_requests"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    start_date = Column(Date, nullable=False)
+    end_date = Column(Date, nullable=False)
+    status = Column(String(20), nullable=False, default="pending")
+    requested_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+    reviewed_at = Column(DateTime(timezone=True), nullable=True)
+    reviewed_by_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    review_note = Column(String(500), nullable=True)
+
+    __table_args__ = (
+        CheckConstraint("status IN ('pending', 'approved', 'rejected')", name="check_statement_request_status"),
+        CheckConstraint("start_date <= end_date", name="check_statement_request_dates"),
+        Index("idx_statement_request_status", "status", "requested_at"),
     )

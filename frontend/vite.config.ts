@@ -31,6 +31,8 @@ export default defineConfig({
       '/accounting': apiProxy,
       '/demo': apiProxy,
       '/health': apiProxy,
+      '/accounts': apiProxy,
+      '/statements': apiProxy,
     }
   }
 })

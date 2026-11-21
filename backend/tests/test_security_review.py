@@ -22,8 +22,8 @@ def test_openapi_auth_coverage():
     unprotected_allowed = {
         "/health",
         "/auth/login",
+        "/auth/register",
         "/demo/scenarios",
-        "/demo/reset"  # Protected by DEMO_MODE flag
     }
 
     unprotected_found = []
@@ -63,3 +63,23 @@ def test_startup_checks():
         assert "JWT_SECRET must be at least 16 characters" in str(exc.value)
     finally:
         settings.JWT_SECRET = old_secret
+
+def test_demo_reset_requires_authentication():
+    response = client.post("/demo/reset")
+    assert response.status_code == 401
+def test_production_startup_rejects_demo_mode_and_placeholder_secret(monkeypatch):
+    from app.config import DEVELOPMENT_JWT_SECRET
+
+    monkeypatch.setattr(settings, "ENVIRONMENT", "production")
+    monkeypatch.setattr(settings, "DEMO_MODE", True)
+    monkeypatch.setattr(settings, "JWT_SECRET", "a-configured-production-secret-long-enough")
+    with pytest.raises(RuntimeError, match="DEMO_MODE must be false"):
+        perform_startup_checks()
+
+    monkeypatch.setattr(settings, "DEMO_MODE", False)
+    monkeypatch.setattr(settings, "JWT_SECRET", DEVELOPMENT_JWT_SECRET)
+    with pytest.raises(RuntimeError, match="Replace the development JWT_SECRET"):
+        perform_startup_checks()
+
+    monkeypatch.setattr(settings, "JWT_SECRET", "a-configured-production-secret-long-enough")
+    perform_startup_checks()

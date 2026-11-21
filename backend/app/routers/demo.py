@@ -1,9 +1,11 @@
 import os
 import sys
 import time
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from app.config import settings
 from app.errors import AppError
+from app.models.entities import User
+from app.security.auth import require_role
 
 # Ensure project root is in sys.path so scripts can be imported anywhere
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
@@ -109,7 +111,7 @@ def get_demo_scenarios():
     return {"scenarios": SCENARIOS}
 
 @router.post("/reset")
-def reset_demo_database():
+def reset_demo_database(current_user: User = Depends(require_role("supervisor"))):
     if not settings.DEMO_MODE:
         raise AppError("DEMO_MODE_DISABLED", "Demo reset disabled in production", status_code=400)
     start_time = time.time()

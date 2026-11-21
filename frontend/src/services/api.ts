@@ -13,6 +13,10 @@ import type {
   GuidanceItem,
   ScamCheckResult,
   RiskBreakdown,
+  TrackedAccount,
+  StatementRequest,
+  StatementPreview,
+  ImportedStatementRow,
 } from '../types';
 
 export class ApiError extends Error {
@@ -102,6 +106,13 @@ export const api = {
     });
   },
 
+  register: async (username: string, password: string, profileType: 'personal' | 'business', initialBalancePaise: number): Promise<{ access_token: string; user: User }> => {
+    return request('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ username, password, profile_type: profileType, initial_balance_paise: initialBalancePaise }),
+    });
+  },
+
   getMe: async (): Promise<User> => {
     return request('/users/me');
   },
@@ -112,6 +123,70 @@ export const api = {
 
   getBalances: async (): Promise<BalanceSummary> => {
     return request('/accounting/summary');
+  },
+
+  getTrackedAccounts: async (): Promise<TrackedAccount[]> => {
+    return request('/accounts');
+  },
+
+  createTrackedAccount: async (data: {
+    institution_name: string;
+    account_name: string;
+    account_type: TrackedAccount['account_type'];
+    last_four?: string;
+    reported_balance_paise: number;
+  }): Promise<TrackedAccount> => {
+    return request('/accounts', { method: 'POST', body: JSON.stringify(data) });
+  },
+
+  updateTrackedAccountBalance: async (id: number, reported_balance_paise: number): Promise<TrackedAccount> => {
+    return request(`/accounts/${id}/balance`, {
+      method: 'PATCH',
+      body: JSON.stringify({ reported_balance_paise }),
+    });
+  },
+
+  deleteTrackedAccount: async (id: number): Promise<void> => {
+    return request(`/accounts/${id}`, { method: 'DELETE' });
+  },
+
+  importStatementRows: async (file_hash: string, rows: ImportedStatementRow[]): Promise<{ imported_count: number; duplicates_skipped: number; transaction_ids: number[] }> => {
+    return request('/statements/import', {
+      method: 'POST',
+      body: JSON.stringify({ file_hash, rows }),
+    });
+  },
+
+  createStatementRequest: async (start_date: string, end_date: string): Promise<StatementRequest> => {
+    return request('/statements/requests', {
+      method: 'POST',
+      body: JSON.stringify({ start_date, end_date }),
+    });
+  },
+
+  getStatementRequests: async (): Promise<StatementRequest[]> => request('/statements/requests'),
+
+  getStatementQueue: async (): Promise<StatementRequest[]> => request('/statements/requests/queue'),
+
+  getStatementPreview: async (id: number): Promise<StatementPreview> => request(`/statements/requests/${id}/preview`),
+
+  decideStatementRequest: async (id: number, decision: 'approved' | 'rejected', note: string): Promise<StatementRequest> => {
+    return request(`/statements/requests/${id}/decision`, {
+      method: 'POST',
+      body: JSON.stringify({ decision, note }),
+    });
+  },
+
+  downloadStatement: async (id: number): Promise<Blob> => {
+    const token = sessionStorage.getItem('payguard_token');
+    const response = await fetch(`/statements/requests/${id}/download`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (!response.ok) {
+      const isJson = response.headers.get('content-type')?.includes('application/json');
+      throw new ApiError(response.status, isJson ? await response.json() : null);
+    }
+    return response.blob();
   },
 
   getReconciliation: async (): Promise<ReconciliationResult> => {

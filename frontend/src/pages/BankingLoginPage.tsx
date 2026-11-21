@@ -4,11 +4,11 @@ import { Building2, ShieldCheck, UserCheck, AlertCircle, Lock, ArrowRight, User,
 import { useAuth } from '../contexts/AuthContext';
 
 export const BankingLoginPage: React.FC = () => {
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
   const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState<'officer' | 'manager'>('officer');
-  const [username, setUsername] = useState('ananya_reviewer');
-  const [password, setPassword] = useState('password123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -16,11 +16,11 @@ export const BankingLoginPage: React.FC = () => {
     setSelectedRole(role);
     setError(null);
     if (role === 'officer') {
-      setUsername('ananya_reviewer');
+      setUsername('');
     } else {
-      setUsername('vikram_supervisor');
+      setUsername('');
     }
-    setPassword('password123');
+    setPassword('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,6 +32,8 @@ export const BankingLoginPage: React.FC = () => {
       if (loggedUser.role === 'reviewer' || loggedUser.role === 'supervisor') {
         navigate('/review');
       } else {
+        // Do not leave a customer session active on the staff sign-in page.
+        logout();
         setError('Access Denied: Customer accounts are not authorized to access the Banking Operations Portal.');
       }
     } catch (err: any) {

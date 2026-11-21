@@ -7,6 +7,7 @@ interface AuthContextType {
   token: string | null;
   loading: boolean;
   login: (username: string, password?: string) => Promise<User>;
+  register: (username: string, password: string, profileType: 'personal' | 'business', initialBalancePaise: number) => Promise<User>;
   logout: () => void;
   switchAccount: (username: string) => Promise<void>;
 }
@@ -52,6 +53,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const register = async (username: string, password: string, profileType: 'personal' | 'business', initialBalancePaise: number): Promise<User> => {
+    setLoading(true);
+    try {
+      const res = await api.register(username, password, profileType, initialBalancePaise);
+      sessionStorage.setItem('payguard_token', res.access_token);
+      setToken(res.access_token);
+      setUser(res.user);
+      return res.user;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = () => {
     sessionStorage.removeItem('payguard_token');
     setToken(null);
@@ -63,7 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout, switchAccount }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout, switchAccount }}>
       {children}
     </AuthContext.Provider>
   );

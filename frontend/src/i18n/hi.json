@@ -60,6 +60,8 @@
   "alert.review.rejected": "सुरक्षा समीक्षा द्वारा आपके {amount_paise} के भुगतान को अस्वीकार कर दिया गया। आरक्षित राशि जारी कर दी गई है।",
   "alert.review.escalated": "आपके {amount_paise} के भुगतान को वरिष्ठ पर्यवेक्षक की समीक्षा के लिए भेजा गया है।",
   "alert.review.confirmed_fraud": "चेतावनी: प्राप्तकर्ता {payee_masked} को सुरक्षा टीम द्वारा धोखाधड़ी के रूप में पुष्टि की गई।",
+  "alert.statement.approved": "{start_date} से {end_date} तक की आपकी गतिविधि विवरण अनुरोध को मंजूरी मिल गई है। इसे Statements से डाउनलोड करें।",
+  "alert.statement.rejected": "{start_date} से {end_date} तक की आपकी गतिविधि विवरण अनुरोध अस्वीकार कर दी गई। Statements में प्रबंधक की टिप्पणी देखें।",
   "alert.budget.warning_80": "बजट अलर्ट: आपने अपने {category} बजट का 80% या अधिक खर्च कर लिया है।",
   "alert.budget.exceeded_100": "बजट पार हो गया: आप अपने {category} बजट के 100% तक पहुँच गए हैं या उससे अधिक खर्च कर चुके हैं।",
   "learn.title": "वित्तीय जागरूकता और स्कैम से सुरक्षा",

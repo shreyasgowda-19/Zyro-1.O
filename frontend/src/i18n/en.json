@@ -60,6 +60,8 @@
   "alert.review.rejected": "Your payment of {amount_paise} was rejected by security review. Funds have been unreserved.",
   "alert.review.escalated": "Your payment of {amount_paise} has been escalated for senior supervisor review.",
   "alert.review.confirmed_fraud": "Warning: Payee {payee_masked} was confirmed as fraudulent by security team.",
+  "alert.statement.approved": "Your activity statement request for {start_date} to {end_date} was approved. Download it from Statements.",
+  "alert.statement.rejected": "Your activity statement request for {start_date} to {end_date} was rejected. Review the manager's note in Statements.",
   "alert.budget.warning_80": "Budget alert: You have reached 80% or more of your {category} budget.",
   "alert.budget.exceeded_100": "Budget exceeded: You have reached or exceeded 100% of your {category} budget.",
   "learn.title": "Financial Awareness & Scam Protection",

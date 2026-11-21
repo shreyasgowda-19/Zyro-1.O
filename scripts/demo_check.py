@@ -2,7 +2,9 @@ import os
 import sys
 import time
 import json
+from datetime import datetime, timedelta
 from typing import Dict, Any, Tuple
+import pytz
 
 # Add backend directory to sys.path
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -67,6 +69,10 @@ def run_demo_check():
     # D2: Normal payment scores Low, completes, shows "No risk signals found"
     try:
         low_key = f"demo_check_low_{int(time.time()*1000)}"
+        now_ist = datetime.now(pytz.timezone("Asia/Kolkata"))
+        low_risk_time = now_ist.replace(hour=12, minute=0, second=0, microsecond=0)
+        if low_risk_time < now_ist:
+            low_risk_time += timedelta(days=1)
         res_low = client.post("/payments", json={
             "amount_paise": 50000,
             "category": "Groceries",
@@ -75,7 +81,8 @@ def run_demo_check():
             "method": "upi",
             "note": "Weekly groceries",
             "synthetic_device_tag": "D1",
-            "synthetic_city_tag": "Bengaluru"
+            "synthetic_city_tag": "Bengaluru",
+            "simulated_at": low_risk_time.isoformat()
         }, headers={**cust_headers, "Idempotency-Key": low_key})
         d2_data = res_low.json()
         d2_pass = (

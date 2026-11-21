@@ -69,7 +69,8 @@ def test_demo_scenarios_list():
 def test_demo_reset_speed_and_state():
     # Measure reset execution time
     start_time = time.time()
-    res = client.post("/demo/reset")
+    supervisor_token = get_auth_token('vikram_supervisor')
+    res = client.post('/demo/reset', headers={'Authorization': f'Bearer {supervisor_token}'})
     duration = time.time() - start_time
 
     assert res.status_code == 200

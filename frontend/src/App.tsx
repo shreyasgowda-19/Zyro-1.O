@@ -12,6 +12,10 @@ import { NewPaymentPage } from './pages/NewPaymentPage';
 import { PaymentResultPage } from './pages/PaymentResultPage';
 import { BudgetsPage } from './pages/BudgetsPage';
 import { LearnPage } from './pages/LearnPage';
+import { AccountsPage } from './pages/AccountsPage';
+import { RegisterPage } from './pages/RegisterPage';
+import { StatementsPage } from './pages/StatementsPage';
+import { StatementQueuePage } from './pages/StatementQueuePage';
 
 const AccessDenied: React.FC<{ userRole: string }> = ({ userRole }) => {
   const navigate = useNavigate();
@@ -93,6 +97,7 @@ function AppContent() {
         <Routes>
           <Route path="/login" element={<Navigate to="/login/customer" replace />} />
           <Route path="/login/customer" element={<CustomerLoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="/login/banking" element={<BankingLoginPage />} />
           <Route path="/login/bank" element={<Navigate to="/login/banking" replace />} />
           <Route path="/login/reviewer" element={<Navigate to="/login/banking" replace />} />
@@ -138,6 +143,14 @@ function AppContent() {
             }
           />
           <Route
+            path="/review/statements"
+            element={
+              <ProtectedRoute roles={['supervisor']}>
+                <StatementQueuePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/pay"
             element={
               <ProtectedRoute roles={['customer']}>
@@ -166,6 +179,22 @@ function AppContent() {
             element={
               <ProtectedRoute roles={['customer']}>
                 <BudgetsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/accounts"
+            element={
+              <ProtectedRoute roles={['customer']}>
+                <AccountsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/statements"
+            element={
+              <ProtectedRoute roles={['customer']}>
+                <StatementsPage />
               </ProtectedRoute>
             }
           />

@@ -13,6 +13,53 @@ export interface Account {
   opening_balance_paise: number;
 }
 
+export interface TrackedAccount {
+  id: number;
+  institution_name: string;
+  account_name: string;
+  account_type: 'savings' | 'current' | 'cash' | 'other';
+  last_four?: string | null;
+  reported_balance_paise: number;
+  balance_as_of: string;
+  created_at: string;
+}
+
+export interface StatementRequest {
+  id: number;
+  user_id: number;
+  requester_username?: string | null;
+  start_date: string;
+  end_date: string;
+  status: 'pending' | 'approved' | 'rejected';
+  requested_at: string;
+  reviewed_at?: string | null;
+  reviewed_by_id?: number | null;
+  review_note?: string | null;
+  transaction_count: number;
+}
+
+export interface StatementPreview {
+  request_id: number;
+  total_count: number;
+  rows: Array<{
+    transaction_date: string;
+    type: 'income' | 'expense';
+    category: string;
+    description: string;
+    amount_paise: number;
+    source: string;
+  }>;
+}
+
+export interface ImportedStatementRow {
+  type: 'income' | 'expense';
+  amount_paise: number;
+  category: string;
+  note?: string;
+  created_at: string;
+  row_number: number;
+}
+
 export interface BalanceSummary {
   completed_balance_paise: number;
   held_balance_paise: number;

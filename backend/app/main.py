@@ -10,9 +10,9 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
-from app.config import settings, BASE_DIR
+from app.config import settings, BASE_DIR, DEVELOPMENT_JWT_SECRET
 from app.errors import AppError, app_error_handler, validation_error_handler, http_exception_handler
-from app.routers import auth, health, payments, transactions, accounting, review, alerts, demo, risk, budgets, goals, guidance
+from app.routers import auth, health, payments, transactions, accounting, review, alerts, demo, risk, budgets, goals, guidance, tracked_accounts, statements
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -21,6 +21,12 @@ def perform_startup_checks():
     # 1. JWT secret check
     if not settings.JWT_SECRET or len(settings.JWT_SECRET) < 16:
         raise RuntimeError("FATAL: JWT_SECRET must be at least 16 characters long.")
+
+    if settings.ENVIRONMENT.strip().lower() in {"prod", "production"}:
+        if settings.DEMO_MODE:
+            raise RuntimeError("FATAL: DEMO_MODE must be false in production.")
+        if settings.JWT_SECRET == DEVELOPMENT_JWT_SECRET:
+            raise RuntimeError("FATAL: Replace the development JWT_SECRET before production startup.")
 
     # 2. Risk rules schema check
     rules_path = os.path.join(BASE_DIR, settings.RULES_CONFIG_PATH)
@@ -105,3 +111,5 @@ app.include_router(risk.router)
 app.include_router(budgets.router)
 app.include_router(goals.router)
 app.include_router(guidance.router)
+app.include_router(tracked_accounts.router)
+app.include_router(statements.router)

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ShieldCheck, LogOut, LayoutDashboard, Send, History, PieChart, BookOpen, Globe } from 'lucide-react';
+import { ShieldCheck, LogOut, LayoutDashboard, Send, History, PieChart, BookOpen, Globe, Landmark, FileText } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 
@@ -71,6 +71,15 @@ export const Navbar: React.FC = () => {
                       <span>{t('nav.budgets')}</span>
                     </Link>
                     <Link
+                      to="/accounts"
+                      className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition ${
+                        location.pathname === '/accounts' ? 'bg-slate-800 text-teal-400 font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                      }`}
+                    >
+                      <Landmark className="w-4 h-4" />
+                      <span>My Accounts</span>
+                    </Link>
+                    <Link
                       to="/learn"
                       className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition ${
                         location.pathname === '/learn' ? 'bg-slate-800 text-teal-400 font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
@@ -78,6 +87,15 @@ export const Navbar: React.FC = () => {
                     >
                       <BookOpen className="w-4 h-4" />
                       <span>{t('nav.learn')}</span>
+                    </Link>
+                    <Link
+                      to="/statements"
+                      className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition ${
+                        location.pathname === '/statements' ? 'bg-slate-800 text-teal-400 font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                      }`}
+                    >
+                      <FileText className="w-4 h-4" />
+                      <span>Statements</span>
                     </Link>
                   </>
                 )}
@@ -103,6 +121,17 @@ export const Navbar: React.FC = () => {
                       <span>Audit Trail</span>
                     </Link>
                   </>
+                )}
+                {user?.role === 'supervisor' && (
+                  <Link
+                    to="/review/statements"
+                    className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition ${
+                      location.pathname === '/review/statements' ? 'bg-slate-800 text-amber-400 font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                    }`}
+                  >
+                    <FileText className="w-4 h-4" />
+                    <span>Statement Requests</span>
+                  </Link>
                 )}
               </nav>
             )}

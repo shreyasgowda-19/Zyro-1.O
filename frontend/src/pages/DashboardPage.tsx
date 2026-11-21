@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Send, AlertTriangle, ShieldCheck, ShieldAlert, RefreshCw, Eye, Bell } from 'lucide-react';
+import { Send, AlertTriangle, ShieldCheck, ShieldAlert, RefreshCw, Eye, Bell, Landmark } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { api, getErrorMessage } from '../services/api';
-import type { BalanceSummary, AlertItem, Transaction, ReconciliationResult } from '../types';
+import type { BalanceSummary, AlertItem, Transaction, ReconciliationResult, TrackedAccount } from '../types';
 import { formatPaise } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -18,6 +18,7 @@ export const DashboardPage: React.FC = () => {
   const [reconciliation, setReconciliation] = useState<ReconciliationResult | null>(null);
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [trackedAccounts, setTrackedAccounts] = useState<TrackedAccount[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,17 +30,19 @@ export const DashboardPage: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const [balData, reconData, alertData, txData] = await Promise.all([
+      const [balData, reconData, alertData, txData, trackedAccountData] = await Promise.all([
         api.getBalances(),
         api.getReconciliation().catch(() => null),
         api.getAlerts().catch(() => ({ items: [], unread_count: 0 })),
         api.getTransactions().catch(() => []),
+        api.getTrackedAccounts().catch(() => []),
       ]);
 
       setBalances(balData);
       setReconciliation(reconData);
       setAlerts(alertData.items || []);
       setTransactions(txData || []);
+      setTrackedAccounts(trackedAccountData || []);
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {
@@ -137,6 +140,42 @@ export const DashboardPage: React.FC = () => {
       </div>
 
       {/* Live Reconciliation Badge (§8) */}
+      {/* Reported bank balances are user-entered and separate from the simulated payment ledger. */}
+      <section className="bg-white rounded-2xl border border-indigo-200 shadow-xs overflow-hidden">
+        <div className="px-5 py-4 border-b border-indigo-100 bg-indigo-50/60 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="rounded-lg bg-indigo-100 text-indigo-700 p-2"><Landmark className="w-5 h-5" /></div>
+            <div>
+              <h2 className="text-sm font-bold text-slate-900">My reported bank balances</h2>
+              <p className="text-xs text-slate-500">Manually entered by you; not synced with your bank.</p>
+            </div>
+          </div>
+          <Link to="/accounts" className="text-xs font-semibold text-indigo-700 hover:text-indigo-900">Manage accounts →</Link>
+        </div>
+        {trackedAccounts.length === 0 ? (
+          <div className="px-5 py-5 text-sm text-slate-500">No personal accounts added yet. <Link to="/accounts" className="font-semibold text-indigo-700 hover:underline">Add an account</Link> to see your reported balance here.</div>
+        ) : (
+          <>
+            <div className="divide-y divide-slate-100">
+              {trackedAccounts.map((account) => (
+                <div key={account.id} className="px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">{account.account_name}</p>
+                    <p className="text-xs text-slate-500">{account.institution_name}{account.last_four ? `; ending ${account.last_four}` : ''} · {account.account_type}</p>
+                    <p className="text-[11px] text-slate-400">Reported {new Date(account.balance_as_of).toLocaleString()}</p>
+                  </div>
+                  <p className="text-lg font-bold text-slate-900">{formatPaise(account.reported_balance_paise)}</p>
+                </div>
+              ))}
+            </div>
+            <div className="px-5 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-between gap-3">
+              <span className="text-xs font-semibold text-slate-600">Total reported balance</span>
+              <span className="text-sm font-bold text-indigo-800">{formatPaise(trackedAccounts.reduce((total, account) => total + account.reported_balance_paise, 0))}</span>
+            </div>
+          </>
+        )}
+      </section>
+
       <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <div className={`p-2 rounded-lg ${reconciliation?.all_passed ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}`}>

@@ -18,7 +18,7 @@
 
 ---
 
-## 🚀 Quick Start (3 Commands)
+## 🚀 Quick Start (Local Development)
 
 ### 1. Prerequisites
 - Python 3.11+
@@ -46,18 +46,29 @@ npm run dev
 ```
 *Web application runs at `http://localhost:5173`.*
 
-### 4. One-Command Demo Reset (< 0.5s)
-```bash
+### 4. Reset Synthetic Demo Data (Local Development Only)
+~~~bash
 python scripts/reset_demo.py
-# or via REST:
-curl -X POST http://localhost:8000/demo/reset
-```
+~~~
+This deletes and reseeds the configured database. Do not run it against data you need to keep.
+
+## Hosted Deployment Configuration (Simulated Workflow Only)
+
+Before running the API with ENVIRONMENT=production, configure:
+~~~env
+ENVIRONMENT=production
+DEMO_MODE=false
+JWT_SECRET=<unique random secret of at least 32 characters>
+DATABASE_URL=<persistent database URL>
+CORS_ORIGINS=<your deployed frontend origin>
+~~~
+Startup refuses production mode while demo mode is enabled or the development JWT secret is in use. Disabling demo mode turns off demo scenario/reset endpoints; payment processing remains simulated. This prototype does not connect to a bank or move real funds.
 
 ---
 
 ## 👥 Seeded Demo Accounts (Synthetic Test Data)
 
-The login screen provides a **1-Click Demo Account Quick Picker**, and the top navigation bar includes an **Instant Role Switcher**. All demo accounts share the password: `password123`.
+The seeded personas are synthetic and share the test password password123 for local use only. Do not deploy this seed data or use these credentials in a hosted deployment.
 
 | Username | Role | Profile Type | Persona & Use Case | Initial Balance |
 |---|---|---|---|---|

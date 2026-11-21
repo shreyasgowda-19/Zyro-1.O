@@ -109,21 +109,27 @@ def seed_database():
                 created_at=salary_date
             ))
 
-        # 25 Completed Expenses over past 60 days
-        for i in range(25):
-            days_ago = random.randint(3, 60)
-            tx_time = (now - timedelta(days=days_ago, hours=random.randint(10, 20))).replace(minute=random.randint(0, 59))
-            amt_rupees = random.choice([250, 450, 800, 1200, 1500, 2200, 3100, 4500])
+        # Distinct historical expenses (no duplicate notes or duplicate amounts)
+        distinct_expenses = [
+            ("Utilities", 149900, payees[0].id, "Airtel Fiber Broadband Bill", 45),
+            ("Housing", 1850000, payees[1].id, "Apartment Maintenance & Water Charges", 38),
+            ("Groceries", 284000, payees[2].id, "Fresh Mart Weekly Grocery Stock", 25),
+            ("Food & Dining", 92000, payees[2].id, "Family Weekend Dinner", 18),
+            ("Utilities", 112000, payees[0].id, "Electricity Utility Bill", 12),
+            ("Shopping", 345000, payees[2].id, "Home Essentials and Supplies", 5),
+        ]
+        for cat, amt, pid, note, days in distinct_expenses:
+            tx_time = (now - timedelta(days=days, hours=14)).replace(minute=30)
             db.add(Transaction(
                 user_id=rahul_id,
                 type="expense",
                 source="payment",
-                amount_paise=amt_rupees * 100,
-                category=random.choice(categories),
-                payee_id=payees[0].id if i % 2 == 0 else payees[2].id,
+                amount_paise=amt,
+                category=cat,
+                payee_id=pid,
                 method="upi",
                 status="completed",
-                note=f"Payment for supplies #{i+1}",
+                note=note,
                 synthetic_device_tag="D1",
                 synthetic_city_tag="Bengaluru",
                 created_at=tx_time

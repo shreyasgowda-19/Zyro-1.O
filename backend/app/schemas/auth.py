@@ -6,6 +6,12 @@ class LoginRequest(BaseModel):
     username: str = Field(..., min_length=1, max_length=50)
     password: str = Field(..., min_length=1, max_length=100)
 
+class RegisterRequest(BaseModel):
+    username: str = Field(..., min_length=3, max_length=50)
+    password: str = Field(..., min_length=8, max_length=100)
+    profile_type: Optional[str] = Field("personal")
+    initial_balance_paise: Optional[int] = Field(5000000, ge=0, le=1000000000)
+
 class UserResponse(BaseModel):
     id: int
     username: str
