@@ -64,6 +64,15 @@ CORS_ORIGINS=<your deployed frontend origin>
 ~~~
 Startup refuses production mode while demo mode is enabled or the development JWT secret is in use. Disabling demo mode turns off demo scenario/reset endpoints; payment processing remains simulated. This prototype does not connect to a bank or move real funds.
 
+### Provisioning Bank Staff
+
+After applying database migrations, an authorized server operator can create internal accounts from the repository root:
+~~~bash
+python scripts/create_staff.py branch_reviewer --role reviewer
+python scripts/create_staff.py branch_supervisor --role supervisor
+~~~
+The command prompts for the password twice without echoing it. Staff accounts cannot be created through customer registration; host access to the configured application database is required.
+
 ---
 
 ## 👥 Seeded Demo Accounts (Synthetic Test Data)
