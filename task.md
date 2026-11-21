@@ -47,14 +47,14 @@
   - [x] Concurrency & optimistic locking tests
   - [x] Phase 2b Gate check & report (commit: `phase-2b-verified`)
 
-- [ ] **Phase 2c: Review Service, Supervisor Resolution, Alerts, Audit**
-  - [ ] `review_service.py` (hold_review, post_review, mandatory note 5-500 chars, optimistic locking `expected_version`)
-  - [ ] Supervisor escalation resolution (two-person rule: resolver != escalator)
-  - [ ] `alert_service.py` (dedupe_key, customer in-app alerts)
-  - [ ] Review & audit routers (`/review/cases`, `/review/cases/{id}`, `/review/cases/{id}/decision`, `/review/audit`, `/alerts`)
-  - [ ] Reviewer masking: payee `••••ab12`, customer `CUST-` + 6 hex HMAC
-  - [ ] Append-only DB triggers verification tests
-  - [ ] Phase 2c Gate check & report (commit: `phase-2c-verified`)
+- [x] **Phase 2c: Review Service, Supervisor Resolution, Alerts, Audit**
+  - [x] `review_service.py` (hold_review, post_review, mandatory note 5-500 chars, optimistic locking `expected_version`)
+  - [x] Supervisor escalation resolution (two-person rule: resolver != escalator)
+  - [x] `alert_service.py` (dedupe_key, customer in-app alerts)
+  - [x] Review & audit routers (`/review/cases`, `/review/cases/{id}`, `/review/cases/{id}/decision`, `/review/audit`, `/alerts`)
+  - [x] Reviewer masking: payee `••••ab12`, customer `CUST-` + 6 hex HMAC
+  - [x] Append-only DB triggers verification tests
+  - [x] Phase 2c Gate check & report (commit: `phase-2c-verified`)
 
 - [ ] **Phase 2d: Customer Pay, Risk Result, Reviewer UI, Simulator, Reset (CHECKPOINT STOP)**
   - [ ] Frontend API client & central error layer

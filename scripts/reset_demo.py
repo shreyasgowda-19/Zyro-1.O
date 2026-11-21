@@ -26,15 +26,32 @@ def reset_demo():
         engine.dispose()
     except Exception:
         pass
+    import gc
+    gc.collect()
 
     # Clean existing database files
+    file_removed = True
     for ext in ["", "-wal", "-shm"]:
         target_file = db_path + ext
         if os.path.exists(target_file):
             try:
                 os.remove(target_file)
             except Exception as e:
-                print(f"Warning removing {target_file}: {e}")
+                file_removed = False
+
+    # If file removal was blocked by Windows file lock, drop all tables cleanly
+    if not file_removed and os.path.exists(db_path):
+        try:
+            import sqlite3
+            c = sqlite3.connect(db_path)
+            c.execute("PRAGMA foreign_keys = OFF;")
+            tables = [r[0] for r in c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name != 'sqlite_sequence'").fetchall()]
+            for t in tables:
+                c.execute(f"DROP TABLE IF EXISTS \"{t}\";")
+            c.commit()
+            c.close()
+        except Exception as e:
+            print(f"Table drop fallback warning: {e}")
 
     # Run alembic upgrade head
     from alembic.config import Config

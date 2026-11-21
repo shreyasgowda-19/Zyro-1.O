@@ -246,6 +246,61 @@ def seed_database():
         )
         db.add(action_escalate)
 
+        # Case 3: Post-Review Case (Customer confirmed Medium risk payment)
+        techcraft_id = created_users["techcraft_solutions"].id
+        new_vendor = Payee(
+            owner_user_id=techcraft_id,
+            display_name="Software License Portal",
+            masked_identifier="••••8819",
+            trust_status="known"
+        )
+        db.add(new_vendor)
+        db.flush()
+
+        post_tx = Transaction(
+            user_id=techcraft_id,
+            type="expense",
+            source="payment",
+            amount_paise=4500000,  # ₹45,000
+            category="Software",
+            payee_id=new_vendor.id,
+            method="upi",
+            status="completed",
+            note="Annual enterprise tool subscription",
+            synthetic_device_tag="D1",
+            synthetic_city_tag="Bengaluru",
+            created_at=now - timedelta(hours=12)
+        )
+        db.add(post_tx)
+        db.flush()
+
+        assessment_3 = RiskAssessment(
+            transaction_id=post_tx.id,
+            score=55,
+            band="medium",
+            rules_version="1.0.0",
+            features_json=json.dumps({"sample_size": 15}),
+            created_at=post_tx.created_at
+        )
+        db.add(assessment_3)
+        db.flush()
+
+        db.add_all([
+            RiskReason(assessment_id=assessment_3.id, rule_code="R1", points=25, params_json=json.dumps({"amount_paise": 4500000})),
+            RiskReason(assessment_id=assessment_3.id, rule_code="R2", points=15, params_json=json.dumps({"payee_masked": "••••8819"})),
+            RiskReason(assessment_id=assessment_3.id, rule_code="R8", points=15, params_json=json.dumps({"phrase_ids": ["license"]}))
+        ])
+
+        case_3 = ReviewCase(
+            transaction_id=post_tx.id,
+            case_type="post_review",
+            status="open",
+            version=1,
+            created_at=post_tx.created_at,
+            updated_at=post_tx.created_at
+        )
+        db.add(case_3)
+
         # 6. Create Monthly Budgets for Rahul (Current Month)
         current_period = now.strftime("%Y-%m")
         db.add_all([
@@ -280,6 +335,15 @@ def seed_database():
                 related_transaction_id=None,
                 dedupe_key=f"budget_80_{current_period}_Food_Dining",
                 created_at=now - timedelta(hours=12)
+            ),
+            Alert(
+                user_id=priya_id,
+                type="fraud",
+                title_code="alert.fraud.held_notice",
+                params_json=json.dumps({"amount_paise": 4500000, "status": "held"}),
+                related_transaction_id=held_tx_1.id,
+                dedupe_key=f"fraud_held_welcome_{priya_id}",
+                created_at=now - timedelta(hours=3)
             ),
         ])
 

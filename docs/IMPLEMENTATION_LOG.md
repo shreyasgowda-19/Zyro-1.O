@@ -96,6 +96,73 @@ npx vitest run
 
 ---
 
+## [Phase 2c] - Review Service, Supervisor Resolution, Alerts & Audit Log
+
+### Work Done:
+1. Implemented Review Schemas (`backend/app/schemas/review.py` & `alerts.py`):
+   - `ReviewDecisionRequest` enforcing mandatory note (5–500 chars) and optimistic concurrency `expected_version`.
+   - `ReviewCaseResponse` with masked customer reference (`CUST-` + 6 hex HMAC) and masked payee (`••••ab12`).
+   - `AuditLogEntryResponse` returning actor details and safe metadata JSON.
+   - `AlertResponse` with dedupe key and unread indicators.
+2. Implemented Alert Service (`backend/app/services/alert_service.py`):
+   - Deduplicated in-app alert creation via `(user_id, dedupe_key)`.
+   - Unread-only filtering and customer mark-as-read with IDOR protection.
+3. Implemented Review Service (`backend/app/services/review_service.py`):
+   - `get_review_queue`: Ordered by highest score DESC, then oldest created_at ASC; paginated; role-aware (reviewers cannot see escalated cases without supervisor role).
+   - `record_case_decision`:
+     - Self-review block (reviewers/supervisors cannot act on their own payments -> 403).
+     - Mandatory trimmed note (5–500 characters, sensitive inputs stripped -> 422).
+     - Optimistic locking validation (`expected_version` -> 409 `CASE_CONFLICT`).
+     - Supervisor-only resolution for escalated cases (403 for non-supervisors).
+     - Two-person rule enforcement (supervisor resolving escalation cannot be the actor who escalated it -> 403).
+     - Hold review actions: `approve` (tx -> `completed`, payee -> `known`, alert created), `reject` (tx -> `released`, funds freed, alert created), `escalate` (tx -> `escalated`, assigned reviewer set).
+     - Post review actions: `mark_confirmed_fraud` (payee -> `flagged`, alert created), `mark_false_alarm` (alert created).
+     - Atomic append to `review_case_actions` and `audit_log`.
+4. Implemented Review & Alert Routers (`backend/app/routers/review.py` & `alerts.py`):
+   - `GET /review/cases`, `GET /review/cases/{id}`, `POST /review/cases/{id}/decision`, `GET /review/audit`.
+   - `GET /alerts`, `POST /alerts/{id}/read`.
+5. Automated Test Suite (`backend/tests/test_phase2c.py`):
+   - 13 automated tests covering RBAC, mandatory note, optimistic lock conflicts, self-review blocks, approve/reject/escalate workflows, two-person rule enforcement, confirmed fraud payee flagging, audit log queries, and customer alert IDOR protection.
+
+### Commands Run & Output:
+```bash
+cd backend
+python -m pytest tests/test_phase2c.py -v
+# Output:
+# ======================= 13 passed, 99 warnings in 7.60s =======================
+
+python -m pytest tests -v
+# Output:
+# ====================== 57 passed, 152 warnings in 8.88s =======================
+
+cd ../frontend
+npx vitest run
+# Output:
+# Test Files  1 passed (1)
+#      Tests  8 passed (8)
+#   Duration  422ms
+
+npm run build
+# Output:
+# ✓ built in 2.07s
+```
+
+### Gate Checklist (Phase 2c):
+- [x] Review queue returns cases with masked payee and customer ref: PASS
+- [x] Reviewer cannot view or resolve escalated queue without supervisor role: PASS
+- [x] Reviewer cannot act on payments belonging to own account: PASS
+- [x] Mandatory note (5–500 chars) enforced for all review decisions: PASS
+- [x] Optimistic locking prevents stale updates with 409 `CASE_CONFLICT`: PASS
+- [x] Two-person rule blocks supervisor who escalated from resolving: PASS
+- [x] Approval completes payment; rejection releases held reservation: PASS
+- [x] Confirmed fraud flags payee for future risk evaluations: PASS
+- [x] Native triggers prevent UPDATE/DELETE on `review_case_actions`: PASS
+- [x] All 57 backend tests and 8 frontend tests passing: PASS
+
+**Gate Status: PASS**
+
+---
+
 ## Phase 2a: Explainable Fraud Risk Engine (Pure, Deterministic)
 
 **Date:** 2026-11-21  
@@ -190,5 +257,72 @@ npx vitest run
 - [x] Idempotency keys prevent double charge: PASS
 - [x] Cross-customer IDOR prevented with 404: PASS
 - [x] All 44 backend tests and 8 frontend tests passing: PASS
+
+**Gate Status: PASS**
+
+---
+
+## [Phase 2c] - Review Service, Supervisor Resolution, Alerts & Audit Log
+
+### Work Done:
+1. Implemented Review Schemas (`backend/app/schemas/review.py` & `alerts.py`):
+   - `ReviewDecisionRequest` enforcing mandatory note (5–500 chars) and optimistic concurrency `expected_version`.
+   - `ReviewCaseResponse` with masked customer reference (`CUST-` + 6 hex HMAC) and masked payee (`••••ab12`).
+   - `AuditLogEntryResponse` returning actor details and safe metadata JSON.
+   - `AlertResponse` with dedupe key and unread indicators.
+2. Implemented Alert Service (`backend/app/services/alert_service.py`):
+   - Deduplicated in-app alert creation via `(user_id, dedupe_key)`.
+   - Unread-only filtering and customer mark-as-read with IDOR protection.
+3. Implemented Review Service (`backend/app/services/review_service.py`):
+   - `get_review_queue`: Ordered by highest score DESC, then oldest created_at ASC; paginated; role-aware (reviewers cannot see escalated cases without supervisor role).
+   - `record_case_decision`:
+     - Self-review block (reviewers/supervisors cannot act on their own payments -> 403).
+     - Mandatory trimmed note (5–500 characters, sensitive inputs stripped -> 422).
+     - Optimistic locking validation (`expected_version` -> 409 `CASE_CONFLICT`).
+     - Supervisor-only resolution for escalated cases (403 for non-supervisors).
+     - Two-person rule enforcement (supervisor resolving escalation cannot be the actor who escalated it -> 403).
+     - Hold review actions: `approve` (tx -> `completed`, payee -> `known`, alert created), `reject` (tx -> `released`, funds freed, alert created), `escalate` (tx -> `escalated`, assigned reviewer set).
+     - Post review actions: `mark_confirmed_fraud` (payee -> `flagged`, alert created), `mark_false_alarm` (alert created).
+     - Atomic append to `review_case_actions` and `audit_log`.
+4. Implemented Review & Alert Routers (`backend/app/routers/review.py` & `alerts.py`):
+   - `GET /review/cases`, `GET /review/cases/{id}`, `POST /review/cases/{id}/decision`, `GET /review/audit`.
+   - `GET /alerts`, `POST /alerts/{id}/read`.
+5. Automated Test Suite (`backend/tests/test_phase2c.py`):
+   - 13 automated tests covering RBAC, mandatory note, optimistic lock conflicts, self-review blocks, approve/reject/escalate workflows, two-person rule enforcement, confirmed fraud payee flagging, audit log queries, and customer alert IDOR protection.
+
+### Commands Run & Output:
+```bash
+cd backend
+python -m pytest tests/test_phase2c.py -v
+# Output:
+# ======================= 13 passed, 99 warnings in 7.60s =======================
+
+python -m pytest tests -v
+# Output:
+# ====================== 57 passed, 152 warnings in 8.88s =======================
+
+cd ../frontend
+npx vitest run
+# Output:
+# Test Files  1 passed (1)
+#      Tests  8 passed (8)
+#   Duration  422ms
+
+npm run build
+# Output:
+# ✓ built in 2.07s
+```
+
+### Gate Checklist (Phase 2c):
+- [x] Review queue returns cases with masked payee and customer ref: PASS
+- [x] Reviewer cannot view or resolve escalated queue without supervisor role: PASS
+- [x] Reviewer cannot act on payments belonging to own account: PASS
+- [x] Mandatory note (5–500 chars) enforced for all review decisions: PASS
+- [x] Optimistic locking prevents stale updates with 409 `CASE_CONFLICT`: PASS
+- [x] Two-person rule blocks supervisor who escalated from resolving: PASS
+- [x] Approval completes payment; rejection releases held reservation: PASS
+- [x] Confirmed fraud flags payee for future risk evaluations: PASS
+- [x] Native triggers prevent UPDATE/DELETE on `review_case_actions`: PASS
+- [x] All 57 backend tests and 8 frontend tests passing: PASS
 
 **Gate Status: PASS**

@@ -24,6 +24,9 @@ class Clock:
 
 clock = Clock()
 
+def utcnow() -> datetime:
+    return clock.now_utc()
+
 def validate_and_resolve_time(simulated_at: Optional[datetime], current_clock: Optional[Clock] = None) -> datetime:
     clk = current_clock or clock
     current_utc = clk.now_utc()
