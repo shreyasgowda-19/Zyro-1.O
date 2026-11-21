@@ -20,6 +20,13 @@ def reset_demo():
     else:
         db_path = os.path.join(backend_dir, "payguard.db")
 
+    # Dispose any active engine connections before removing file on Windows
+    try:
+        from app.database import engine
+        engine.dispose()
+    except Exception:
+        pass
+
     # Clean existing database files
     for ext in ["", "-wal", "-shm"]:
         target_file = db_path + ext

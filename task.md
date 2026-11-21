@@ -37,15 +37,15 @@
   - [ ] `docs/RULES.md`
   - [ ] Phase 2a Gate check & report (commit: `phase-2a-verified`)
 
-- [ ] **Phase 2b: Accounting, Lifecycle, Credential Guard, Payment API**
-  - [ ] `credential_guard.py` (Luhn, OTP/PIN proximity, script-text filter, never logs sensitive input)
-  - [ ] Custom `RequestValidationError` handler stripping sensitive values
-  - [ ] `accounting_service.py` (integer paise, completed/held/available balances, reconciliation checks)
-  - [ ] `payment_service.py` (lifecycle state machine, atomic reservations, idempotency via `Idempotency-Key`)
-  - [ ] Payment routers (`POST /payments`, `GET /payments/{id}`, confirm, cancel, transactions)
-  - [ ] Cross-customer IDOR protection & tests
-  - [ ] Concurrency & optimistic locking tests
-  - [ ] Phase 2b Gate check & report (commit: `phase-2b-verified`)
+- [x] **Phase 2b: Accounting, Lifecycle, Credential Guard, Payment API**
+  - [x] `credential_guard.py` (Luhn, OTP/PIN proximity, script-text filter, never logs sensitive input)
+  - [x] Custom `RequestValidationError` handler stripping sensitive values
+  - [x] `accounting_service.py` (integer paise, completed/held/available balances, reconciliation checks)
+  - [x] `payment_service.py` (lifecycle state machine, atomic reservations, idempotency via `Idempotency-Key`)
+  - [x] Payment routers (`POST /payments`, `GET /payments/{id}`, confirm, cancel, transactions)
+  - [x] Cross-customer IDOR protection & tests
+  - [x] Concurrency & optimistic locking tests
+  - [x] Phase 2b Gate check & report (commit: `phase-2b-verified`)
 
 - [ ] **Phase 2c: Review Service, Supervisor Resolution, Alerts, Audit**
   - [ ] `review_service.py` (hold_review, post_review, mandatory note 5-500 chars, optimistic locking `expected_version`)

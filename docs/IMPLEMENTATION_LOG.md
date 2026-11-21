@@ -128,3 +128,67 @@ python -m pytest tests/test_risk_engine.py --cov=app.services.risk_engine --cov-
 - [x] `docs/RULES.md` created: PASS
 
 **Gate Status: PASS**
+
+---
+
+## [Phase 2b] - Accounting, Lifecycle, Credential Guard & Payment APIs
+
+### Work Done:
+1. Implemented Credential & Sensitive Input Guard (`backend/app/services/credential_guard.py`):
+   - Luhn checksum validator for card numbers (13–19 digits).
+   - OTP/PIN proximity pattern matchers rejecting any 4–8 digit credentials adjacent to otp/pin/code terms.
+   - Rejection of standalone 4–6 digit strings in notes/free-text.
+   - Script-text filter rejecting `<script`, `javascript:`, `onerror=`.
+   - Stripping of sensitive inputs before error generation; never echoes raw inputs into logs or API responses.
+2. Implemented Ledger Accounting Service (`backend/app/services/accounting_service.py`):
+   - Strict integer paise calculations across all accounts.
+   - `completed_balance = opening + completed income - completed expenses`.
+   - `held_balance = sum of expenses with status in ('held', 'escalated')`.
+   - `available_balance = completed_balance - held_balance`.
+   - Pre-scoring funds verification raising `INSUFFICIENT_FUNDS` (409) if `amount_paise > available_balance`.
+   - 4-point accounting reconciliation endpoint `GET /accounting/reconciliation`.
+3. Implemented Payment Service & State Machine (`backend/app/services/payment_service.py`):
+   - Central legal transition validator (`validate_transition`) rejecting illegal state transitions with `ILLEGAL_TRANSITION` (400).
+   - Idempotency via `Idempotency-Key` header with payload hash comparison, returning cached result on replay or `IDEMPOTENCY_CONFLICT` (409) on payload mismatch.
+   - Atomic balance reservations on high-risk hold.
+   - Payee lookup by `payee_id` or `payee_masked_identifier`, creating new payee if not found.
+4. Implemented Payment Routers:
+   - `POST /payments`: Initiates payment, validates credentials & funds, runs deterministic risk engine, determines target state (`completed`, `awaiting_confirmation`, `held`).
+   - `GET /payments/{id}`: Returns payment with masked payee and explainable risk assessment.
+   - `POST /payments/{id}/confirm`: Customer explicit confirmation for medium risk payments.
+   - `POST /payments/{id}/cancel`: Customer cancellation for awaiting confirmation payments.
+   - Cross-customer IDOR protection returning 404 for unowned transactions.
+5. Automated Test Suite (`backend/tests/test_phase2b.py`):
+   - 17 automated tests covering credential rejections, Devangari digit normalizations, low/medium/high payment flows, funds reservation, reconciliation checks, idempotency, and cross-customer IDOR protection.
+
+### Commands Run & Output:
+```bash
+cd backend
+python -m pytest tests/test_phase2b.py -v
+# Output:
+# ======================= 17 passed, 68 warnings in 8.45s =======================
+
+python -m pytest tests -v
+# Output:
+# ======================= 44 passed, 81 warnings in 8.46s =======================
+
+cd ../frontend
+npx vitest run
+# Output:
+# Test Files  1 passed (1)
+#      Tests  8 passed (8)
+#   Duration  383ms
+```
+
+### Gate Checklist (Phase 2b):
+- [x] Sensitive input guard rejects OTP/PIN/card/script text: PASS
+- [x] Input sanitization never echoes credentials in errors or logs: PASS
+- [x] Ledger balances computed from ledger single source of truth: PASS
+- [x] Insufficient funds rejected before scoring: PASS
+- [x] High-risk payments transition to held with funds reserved: PASS
+- [x] Medium-risk payments require explicit customer confirmation: PASS
+- [x] Idempotency keys prevent double charge: PASS
+- [x] Cross-customer IDOR prevented with 404: PASS
+- [x] All 44 backend tests and 8 frontend tests passing: PASS
+
+**Gate Status: PASS**
