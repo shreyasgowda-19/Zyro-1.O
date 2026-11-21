@@ -54,6 +54,14 @@ function AppContent() {
             }
           />
           <Route
+            path="/review"
+            element={
+              <ProtectedRoute roles={['reviewer', 'supervisor']}>
+                <ReviewQueuePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/review/*"
             element={
               <ProtectedRoute roles={['reviewer', 'supervisor']}>

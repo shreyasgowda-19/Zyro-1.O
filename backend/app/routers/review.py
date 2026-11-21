@@ -19,6 +19,13 @@ from app.services.review_service import (
 
 router = APIRouter(prefix="/review", tags=["Review"])
 
+@router.get("", include_in_schema=False)
+def review_root_redirect(
+    current_user: User = Depends(require_role("reviewer", "supervisor"))
+):
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="/review/cases")
+
 @router.get("/cases", response_model=ReviewQueueResponse)
 def list_review_cases(
     status: Optional[str] = Query(None, description="open, escalated, closed"),

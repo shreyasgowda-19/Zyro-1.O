@@ -1,24 +1,36 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+const apiProxy = {
+  target: 'http://127.0.0.1:8000',
+  changeOrigin: true,
+  bypass: (req: any) => {
+    // If the browser requests an HTML document (SPA page navigation or reload),
+    // bypass the proxy and serve /index.html for React Router.
+    if (req.headers.accept?.includes('text/html')) {
+      return '/index.html';
+    }
+  },
+};
+
 export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
     proxy: {
-      '/auth': 'http://127.0.0.1:8000',
-      '/users': 'http://127.0.0.1:8000',
-      '/payments': 'http://127.0.0.1:8000',
-      '/transactions': 'http://127.0.0.1:8000',
-      '/risk': 'http://127.0.0.1:8000',
-      '/review': 'http://127.0.0.1:8000',
-      '/budgets': 'http://127.0.0.1:8000',
-      '/goals': 'http://127.0.0.1:8000',
-      '/alerts': 'http://127.0.0.1:8000',
-      '/guidance': 'http://127.0.0.1:8000',
-      '/accounting': 'http://127.0.0.1:8000',
-      '/demo': 'http://127.0.0.1:8000',
-      '/health': 'http://127.0.0.1:8000',
+      '/auth': apiProxy,
+      '/users': apiProxy,
+      '/payments': apiProxy,
+      '/transactions': apiProxy,
+      '/risk': apiProxy,
+      '/review': apiProxy,
+      '/budgets': apiProxy,
+      '/goals': apiProxy,
+      '/alerts': apiProxy,
+      '/guidance': apiProxy,
+      '/accounting': apiProxy,
+      '/demo': apiProxy,
+      '/health': apiProxy,
     }
   }
 })
