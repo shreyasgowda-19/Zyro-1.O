@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ShieldCheck, LogOut, ArrowRightLeft, LayoutDashboard, Send, History, PieChart, BookOpen, Sparkles } from 'lucide-react';
+import { ShieldCheck, LogOut, ArrowRightLeft, LayoutDashboard, Send, History, PieChart, BookOpen, Sparkles, Globe } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { DemoSimulatorModal } from '../common/DemoSimulatorModal';
 
 export const Navbar: React.FC = () => {
   const { user, logout, switchAccount } = useAuth();
+  const { language, setLanguage, t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   const [isSimulatorOpen, setIsSimulatorOpen] = useState<boolean>(false);
@@ -57,7 +59,7 @@ export const Navbar: React.FC = () => {
                       }`}
                     >
                       <LayoutDashboard className="w-4 h-4" />
-                      <span>Dashboard</span>
+                      <span>{t('nav.dashboard')}</span>
                     </Link>
                     <Link
                       to="/pay"
@@ -66,16 +68,7 @@ export const Navbar: React.FC = () => {
                       }`}
                     >
                       <Send className="w-4 h-4" />
-                      <span>Pay / Send</span>
-                    </Link>
-                    <Link
-                      to="/history"
-                      className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition ${
-                        location.pathname === '/history' ? 'bg-slate-800 text-teal-400' : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
-                      }`}
-                    >
-                      <History className="w-4 h-4" />
-                      <span>History</span>
+                      <span>{t('nav.pay')}</span>
                     </Link>
                     <Link
                       to="/budgets"
@@ -84,7 +77,7 @@ export const Navbar: React.FC = () => {
                       }`}
                     >
                       <PieChart className="w-4 h-4" />
-                      <span>Budgets</span>
+                      <span>{t('nav.budgets')}</span>
                     </Link>
                     <Link
                       to="/learn"
@@ -93,7 +86,7 @@ export const Navbar: React.FC = () => {
                       }`}
                     >
                       <BookOpen className="w-4 h-4" />
-                      <span>Learn & Check</span>
+                      <span>{t('nav.learn')}</span>
                     </Link>
                   </>
                 )}
@@ -125,58 +118,71 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Right Controls: Quick Switcher & User Profile */}
-          {user ? (
-            <div className="flex items-center space-x-3">
-              <button
-                type="button"
-                onClick={() => setIsSimulatorOpen(true)}
-                className="hidden sm:inline-flex items-center space-x-1.5 bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-700/60 text-indigo-300 px-2.5 py-1 rounded text-xs font-semibold transition"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                <span>Simulator</span>
-              </button>
+          <div className="flex items-center space-x-2.5">
+            {/* Language Switcher */}
+            <button
+              type="button"
+              onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
+              className="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 px-2.5 py-1 rounded text-xs font-semibold transition min-h-[36px]"
+              title="Switch Language / भाषा बदलें"
+            >
+              <Globe className="w-3.5 h-3.5 text-teal-400" />
+              <span>{language === 'en' ? 'हिंदी' : 'English'}</span>
+            </button>
 
-              <div className="hidden sm:flex items-center space-x-1.5 bg-slate-800/80 px-2 py-1 rounded border border-slate-700 text-xs">
-                <ArrowRightLeft className="w-3.5 h-3.5 text-slate-400" />
-                <select
-                  value={user.username}
-                  onChange={(e) => switchAccount(e.target.value)}
-                  className="bg-transparent text-slate-200 text-xs focus:outline-none cursor-pointer"
-                  title="Switch Demo Role & Account"
+            {user ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setIsSimulatorOpen(true)}
+                  className="hidden sm:inline-flex items-center space-x-1.5 bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-700/60 text-indigo-300 px-2.5 py-1 rounded text-xs font-semibold transition"
                 >
-                  {demoAccounts.map((acc) => (
-                    <option key={acc.username} value={acc.username} className="bg-slate-900 text-white">
-                      {acc.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                  <span>{t('nav.simulator')}</span>
+                </button>
 
-              <div className="flex items-center space-x-2 text-right">
-                <div>
-                  <div className="text-xs font-semibold text-white">{user.username}</div>
-                  <div className="text-[10px] text-teal-400 font-medium capitalize">
-                    {user.role} {user.profile_type ? `(${user.profile_type})` : ''}
+                <div className="hidden sm:flex items-center space-x-1.5 bg-slate-800/80 px-2 py-1 rounded border border-slate-700 text-xs">
+                  <ArrowRightLeft className="w-3.5 h-3.5 text-slate-400" />
+                  <select
+                    value={user.username}
+                    onChange={(e) => switchAccount(e.target.value)}
+                    className="bg-transparent text-slate-200 text-xs focus:outline-none cursor-pointer"
+                    title="Switch Demo Role & Account"
+                  >
+                    {demoAccounts.map((acc) => (
+                      <option key={acc.username} value={acc.username} className="bg-slate-900 text-white">
+                        {acc.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex items-center space-x-2 text-right">
+                  <div>
+                    <div className="text-xs font-semibold text-white">{user.username}</div>
+                    <div className="text-[10px] text-teal-400 font-medium capitalize">
+                      {user.role} {user.profile_type ? `(${user.profile_type})` : ''}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <button
-                onClick={handleLogout}
-                className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded transition"
-                title="Sign Out"
+                <button
+                  onClick={handleLogout}
+                  className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded transition"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/login"
+                className="bg-teal-500 hover:bg-teal-600 text-slate-950 font-semibold px-3 py-1.5 rounded text-xs transition"
               >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </div>
-          ) : (
-            <Link
-              to="/login"
-              className="bg-teal-500 hover:bg-teal-600 text-slate-950 font-semibold px-3 py-1.5 rounded text-xs transition"
-            >
-              Demo Login
-            </Link>
-          )}
+                Demo Login
+              </Link>
+            )}
+          </div>
         </div>
       </div>
       <DemoSimulatorModal

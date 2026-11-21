@@ -43,3 +43,21 @@ This file records all architectural, security, accounting, and lifecycle decisio
   4. Pydantic v1.10 runs in pure-Python mode.
   5. Frontend uses Vite 5 with Rollup WASM engine.
 - **Rationale:** Ensures 100% testable, standard-compliant execution without native binary failure on Windows Enterprise / Smart App Control environments.
+
+### DEC-007: Safe Punctuation Inclusion in Credential Guard (Phase 4)
+- **Date:** 2026-11-21
+- **Context:** §11 specified allowed characters in free text as Unicode letters, digits, spaces, and punctuation `(. , - _ / : ( ) ₹ & ')`. Legitimate payment notes and real-world SMS messages submitted to the scam checker frequently include exclamation marks (`!`), question marks (`?`), and percentages (`%`).
+- **Decision:** Include `!`, `?`, and `%` in `SAFE_TEXT_PATTERN`. Retain strict rejection of script tags (`< >`), backticks, control characters, and `javascript:`.
+- **Rationale:** Prevents false-rejection of natural SMS messages and notes while preserving full protection against script and template injection.
+
+### DEC-008: Zero-Retention Heuristic Scam-Message Checker (Phase 4)
+- **Date:** 2026-11-21
+- **Context:** Scam-message checker requirements (§14, §17).
+- **Decision:** The scam-message checker evaluates input text strictly in memory through deterministic pattern matchers after passing input through the credential guard. The text is never stored in SQLite and never written to logging streams or error responses.
+- **Rationale:** Ensures zero risk of data leakage or unintentional retention of sensitive user communications.
+
+### DEC-009: Bilingual i18n Key & Placeholder Parity (Phase 4)
+- **Date:** 2026-11-21
+- **Context:** English and Hindi localization (§15).
+- **Decision:** All UI copy, advisory risk reasons (R1–R10), in-app alerts, safety checklists, and scam advice are maintained in `frontend/src/i18n/en.json` and `hi.json`. Unit tests enforce 100% key and parameter-placeholder parity. The user language preference is persisted in `localStorage` under `payguard_lang`, strictly separated from JWT credentials which reside only in `sessionStorage`.
+- **Rationale:** Guarantees seamless switching between English and Hindi without runtime placeholder missing errors.

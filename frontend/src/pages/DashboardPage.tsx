@@ -6,10 +6,12 @@ import { api, getErrorMessage } from '../services/api';
 import type { BalanceSummary, AlertItem, Transaction, ReconciliationResult } from '../types';
 import { formatPaise } from '../types';
 import { DemoSimulatorModal } from '../components/common/DemoSimulatorModal';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [balances, setBalances] = useState<BalanceSummary>({
     completed_balance_paise: 0,
     held_balance_paise: 0,
@@ -206,9 +208,8 @@ export const DashboardPage: React.FC = () => {
                     <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                   )}
                   <div className="space-y-0.5">
-                    <span className="text-xs font-bold text-slate-900 block">{a.title_code}</span>
-                    <span className="text-[11px] text-slate-500 font-mono block">
-                      {JSON.stringify(a.params)}
+                    <span className="text-xs font-semibold text-slate-900 block">
+                      {t(a.title_code, a.params || {})}
                     </span>
                   </div>
                 </div>
@@ -218,7 +219,7 @@ export const DashboardPage: React.FC = () => {
                     onClick={() => handleDismissAlert(a.id)}
                     className="text-[11px] font-semibold text-teal-600 hover:text-teal-800 shrink-0"
                   >
-                    Mark as read
+                    {t('dashboard.mark_read')}
                   </button>
                 )}
               </div>

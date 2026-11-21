@@ -468,3 +468,86 @@ npm run build
 - [x] Frontend builds cleanly with zero errors in 2.72s: PASS
 
 **Gate Status: PASS**
+
+
+---
+
+## [Phase 4] - Awareness, Guidance Library, Scam Checker & Bilingual Localization
+
+### Work Done:
+1. Implemented Guidance & Scam Checker Schemas (`backend/app/schemas/guidance.py`):
+   - `GuidanceItemResponse`: Topic, language (`en`, `hi`), title, body, verified source label, URL, and verification date.
+   - `ScamCheckRequest`: Free-text message validation (max 1000 characters).
+   - `ScamCheckResponse`: Heuristic result with `is_suspicious`, `risk_level` (`low`, `medium`, `high`), matched signals, official advice codes, and disclaimer.
+2. Implemented Deterministic Heuristic Scam Checker (`backend/app/services/scam_checker_service.py`):
+   - Integrates with `credential_guard.py` first (§11, §14): any message containing standalone credentials, PINs/OTPs, card numbers, or script tags is rejected with `CREDENTIAL_INPUT_REJECTED` or `INVALID_TEXT` (422) without logging or echoing the secret.
+   - Strict Zero-Retention: Evaluated input text is never saved to the database and never recorded in application logs.
+   - Deterministic rule heuristics scanning urgency/threats, KYC phishing bait, lottery/financial lures, shortened URLs (`bit.ly`, `tinyurl`, etc.), insecure HTTP links, remote access tools (`AnyDesk`, `TeamViewer`, `RustDesk`), and collect request / QR code traps.
+   - Generates actionable advice recommendations (`scam_advice.*`) and official disclaimers.
+3. Implemented Guidance Router (`backend/app/routers/guidance.py`):
+   - `GET /guidance?lang=en|hi`: Returns verified static guidance items (Helpline 1930, Sanchar Saathi, QR code education).
+   - `POST /guidance/scam-check`: Scans messages heuristically without retention.
+   - Mounted in `backend/app/main.py`.
+4. Upgraded Score Breakdown & What-If Engine (`backend/app/routers/risk.py`):
+   - Computes exact what-if score reductions for all rules R1–R10 from stored reasons without re-executing rule logic: `without_signal_score = max(0, min(100, raw_points - r.points))` and canonical band assignment.
+   - Enforces RBAC: Customer can only access own transaction breakdown; Reviewer/Supervisor can access any.
+5. Implemented Bilingual English + Hindi Framework (`frontend/src/i18n/`, `frontend/src/contexts/LanguageContext.tsx`):
+   - `en.json` and `hi.json` translation dictionaries covering all UI copy, R1–R10 risk reasons with parameter interpolation, in-app safety alerts, Before-You-Pay checklist, and guidance library.
+   - `LanguageContext.tsx` providing dynamic reactive translation `t(key, params)` with automatic paise currency formatting (`formatPaise`).
+   - Preference persistence in `localStorage` (`payguard_lang`), strictly decoupled from auth tokens which reside only in `sessionStorage` (§17).
+   - Language switcher toggle button (English / हिंदी) integrated in `Navbar.tsx`.
+   - Created `docs/TODO_HINDI_REVIEW.md` tracking strings for native speaker review.
+6. Implemented Financial Awareness View (`frontend/src/pages/LearnPage.tsx`):
+   - Deterministic Scam-Message Checker input panel with character counter, loading spinner, and `aria-live` accessible results.
+   - Interactive 5-point Before-You-Pay Safety Checklist.
+   - Verified Guidance Library cards with direct links to official portals (cybercrime.gov.in, sancharsaathi.gov.in, rbi.org.in) and last verified dates.
+   - Connected `/learn` route in `App.tsx` and updated nav link.
+7. Enhanced Payment Result Screen (`frontend/src/pages/PaymentResultPage.tsx`):
+   - Connected `useLanguage` to render localized risk reasons with parameter interpolation.
+   - Connected "What Would Change This Score?" interactive panel showing score point reductions.
+8. Responsive & Accessibility Pass:
+   - Verified 360 px mobile viewport layout across all views with flexible flexbox/grid styling and no overflow-inducing fixed widths.
+   - Form inputs with clear semantic labels and minimum 44×44 px tap targets.
+9. Automated Test Suites:
+   - Backend tests (`backend/tests/test_phase4.py`): 5 tests covering English/Hindi guidance endpoints, clean message scan, suspicious signal scan, credential rejection in scam checker, and comprehensive risk breakdown calculation/authorization.
+   - Frontend tests (`frontend/src/tests/i18nParity.test.ts` & `frontend/src/tests/languageContext.test.ts`): 7 unit tests verifying 100% en/hi key and placeholder parity and parameter interpolation.
+
+### Commands Run & Output:
+```bash
+cd backend
+python -m pytest tests/test_phase4.py -v
+# Output:
+# ======================= 5 passed, 104 warnings in 2.50s =======================
+
+python -m pytest tests -v
+# Output:
+# ====================== 77 passed, 319 warnings in 38.56s ======================
+
+cd ../frontend
+npx vitest run
+# Output:
+# Test Files  3 passed (3)
+#      Tests  15 passed (15)
+#   Duration  400ms
+
+npm run build
+# Output:
+# ✓ 2171 modules transformed.
+# dist/assets/index-B2Bf_ceu.js   417.23 kB │ gzip: 117.99 kB
+# ✓ built in 2.75s
+```
+
+### Gate Checklist (Phase 4):
+- [x] Guidance library returns verified static items in English and Hindi: PASS
+- [x] Scam-message checker detects urgency, links, lures, and traps: PASS
+- [x] Scam-message checker rejects credentials and scripts via credential guard: PASS
+- [x] Evaluated message text is never stored in DB or written to logs: PASS
+- [x] What-if breakdown calculates exact point reductions for R1–R10 from stored reasons: PASS
+- [x] English and Hindi translations maintain 100% key and placeholder parity: PASS
+- [x] Language switcher toggle works reactively in top navbar: PASS
+- [x] Interactive 5-point Before-You-Pay checklist functional: PASS
+- [x] App layout responsive at 360 px viewport with minimum 44×44 px tap targets: PASS
+- [x] All 77 backend automated tests and 15 frontend unit tests passing: PASS
+- [x] Frontend builds cleanly with zero errors in 2.75s: PASS
+
+**Gate Status: PASS**

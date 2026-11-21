@@ -13,8 +13,8 @@ CREDENTIAL_KEYWORDS = [
     r"\bpassword\b", r"\bpasscode\b", r"\bone\s+time\s+password\b"
 ]
 
-# Allowed characters: Unicode letters, digits, spaces, and specific safe punctuation: . , - _ / : ( ) ₹ & '
-SAFE_TEXT_PATTERN = re.compile(r"^[\w\s.,\-_/:()₹&']+$", re.UNICODE)
+# Allowed characters: Unicode letters, digits, spaces, and safe punctuation: . , - _ / : ( ) ₹ & ' ! ? %
+SAFE_TEXT_PATTERN = re.compile(r"^[\w\s.,\-_/:()₹&'!?%]+$", re.UNICODE)
 DANGEROUS_PATTERNS = [
     re.compile(r"<"),
     re.compile(r">"),

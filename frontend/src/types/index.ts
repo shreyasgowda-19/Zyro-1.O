@@ -181,6 +181,49 @@ export interface CategoryAnalytics {
   }>;
 }
 
+export interface GuidanceItem {
+  id: number;
+  topic: string;
+  language: 'en' | 'hi';
+  title: string;
+  body: string;
+  source_label: string;
+  source_url?: string | null;
+  last_verified: string;
+}
+
+export interface ScamCheckMatchedSignal {
+  code: string;
+  name: string;
+  description: string;
+}
+
+export interface ScamCheckResult {
+  is_suspicious: boolean;
+  risk_level: 'low' | 'medium' | 'high';
+  matched_signals: ScamCheckMatchedSignal[];
+  advice_codes: string[];
+  disclaimer: string;
+}
+
+export interface RiskWhatWouldChange {
+  rule_code: string;
+  factor: string;
+  reduction_points: number;
+  without_signal_score: number;
+  without_signal_band: 'Low' | 'Medium' | 'High';
+  explanation: string;
+}
+
+export interface RiskBreakdown {
+  transaction_id: number;
+  score: number;
+  band: 'low' | 'medium' | 'high';
+  rules_version: string;
+  fired_reasons: RiskReason[];
+  what_would_change: RiskWhatWouldChange[];
+}
+
 export function formatPaise(paise: number, showDecimals = true): string {
   const isNegative = paise < 0;
   const absPaise = Math.abs(Math.round(paise));

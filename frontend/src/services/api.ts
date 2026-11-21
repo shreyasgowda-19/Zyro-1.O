@@ -10,6 +10,9 @@ import type {
   SavingsGoal,
   CashflowAnalytics,
   CategoryAnalytics,
+  GuidanceItem,
+  ScamCheckResult,
+  RiskBreakdown,
 } from '../types';
 
 export class ApiError extends Error {
@@ -191,7 +194,7 @@ export const api = {
     return request(`/risk/assessments/${transactionId}`);
   },
 
-  getRiskBreakdown: async (transactionId: number): Promise<any> => {
+  getRiskBreakdown: async (transactionId: number): Promise<RiskBreakdown> => {
     return request(`/risk/assessments/${transactionId}/breakdown`);
   },
 
@@ -274,6 +277,18 @@ export const api = {
     return request('/transactions', {
       method: 'POST',
       body: JSON.stringify(data),
+    });
+  },
+
+  // Financial Awareness Guidance & Scam Checker (§14, §17, D13)
+  getGuidance: async (lang: string = 'en'): Promise<GuidanceItem[]> => {
+    return request(`/guidance?lang=${lang}`);
+  },
+
+  checkScamMessage: async (message: string): Promise<ScamCheckResult> => {
+    return request('/guidance/scam-check', {
+      method: 'POST',
+      body: JSON.stringify({ message }),
     });
   },
 };

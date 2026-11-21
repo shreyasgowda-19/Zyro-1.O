@@ -55,6 +55,49 @@ def get_risk_assessment(
         "created_at": assessment.created_at.isoformat()
     }
 
+RULE_EXPLANATIONS = {
+    "R1": {
+        "factor": "amount",
+        "explanation": "Reducing amount closer to your average spending would lower the score."
+    },
+    "R2": {
+        "factor": "payee",
+        "explanation": "Paying a known, trusted payee instead of a new one would lower the score."
+    },
+    "R3": {
+        "factor": "time",
+        "explanation": "Paying during standard daytime hours (05:00-23:59 IST) would lower the score."
+    },
+    "R4": {
+        "factor": "velocity",
+        "explanation": "Waiting at least 5 minutes between payments would lower the score."
+    },
+    "R5": {
+        "factor": "device_city",
+        "explanation": "Transacting from a recognized device and usual city would lower the score."
+    },
+    "R6": {
+        "factor": "payee_trust",
+        "explanation": "Payee is on security watchlists. Removing this flagged payee would reduce the score."
+    },
+    "R7": {
+        "factor": "repeat_pattern",
+        "explanation": "Avoiding amounts just under round limits or repeated identical payments within 24h would lower the score."
+    },
+    "R8": {
+        "factor": "language",
+        "explanation": "Removing urgency, lottery, or refund keywords from payment notes would lower the score."
+    },
+    "R9": {
+        "factor": "balance_drain",
+        "explanation": "Paying an amount that leaves a healthy available balance (>20%) would lower the score."
+    },
+    "R10": {
+        "factor": "collect_method",
+        "explanation": "Initiating a direct payment rather than approving an unknown collect request would lower the score."
+    }
+}
+
 @router.get("/assessments/{transaction_id}/breakdown")
 def get_risk_breakdown(
     transaction_id: int,
@@ -72,14 +115,25 @@ def get_risk_breakdown(
     if not assessment:
         raise AppError("NOT_FOUND", "Risk assessment not found", status_code=404)
 
+    reasons = assessment.reasons or []
+    raw_points = sum(r.points for r in reasons)
+
     fired_reasons = []
     what_would_change = []
 
-    for r in assessment.reasons:
+    for r in reasons:
         try:
             params = json.loads(r.params_json) if r.params_json else {}
         except Exception:
             params = {}
+
+        without_score = max(0, min(100, raw_points - r.points))
+        without_band = "Low" if without_score < 40 else "Medium" if without_score < 70 else "High"
+
+        rule_info = RULE_EXPLANATIONS.get(r.rule_code, {
+            "factor": "risk_signal",
+            "explanation": f"Without this signal the score would reduce by {r.points} points."
+        })
 
         fired_reasons.append({
             "rule_code": r.rule_code,
@@ -87,48 +141,14 @@ def get_risk_breakdown(
             "params": params
         })
 
-        if r.rule_code == "R1":
-            what_would_change.append({
-                "factor": "amount",
-                "reduction_points": r.points,
-                "explanation": f"Reducing amount closer to your average spending would lower the score by {r.points} points."
-            })
-        elif r.rule_code == "R2":
-            what_would_change.append({
-                "factor": "payee",
-                "reduction_points": r.points,
-                "explanation": f"Paying a known, trusted payee instead of a new one would lower the score by {r.points} points."
-            })
-        elif r.rule_code == "R3":
-            what_would_change.append({
-                "factor": "time",
-                "reduction_points": r.points,
-                "explanation": f"Paying between 5 AM and 11 PM instead of late night would lower the score by {r.points} points."
-            })
-        elif r.rule_code == "R4":
-            what_would_change.append({
-                "factor": "velocity",
-                "reduction_points": r.points,
-                "explanation": f"Waiting 5 minutes between payments would lower the score by {r.points} points."
-            })
-        elif r.rule_code == "R6":
-            what_would_change.append({
-                "factor": "payee_trust",
-                "reduction_points": r.points,
-                "explanation": f"Payee is on security watchlists. Removing this flagged payee would reduce the score by {r.points} points."
-            })
-        elif r.rule_code == "R8":
-            what_would_change.append({
-                "factor": "language",
-                "reduction_points": r.points,
-                "explanation": f"Removing urgency/scam keywords from payment note would lower the score by {r.points} points."
-            })
-        elif r.rule_code == "R10":
-            what_would_change.append({
-                "factor": "method",
-                "reduction_points": r.points,
-                "explanation": f"Initiating a direct payment rather than approving an unknown collect request would lower the score by {r.points} points."
-            })
+        what_would_change.append({
+            "rule_code": r.rule_code,
+            "factor": rule_info["factor"],
+            "reduction_points": r.points,
+            "without_signal_score": without_score,
+            "without_signal_band": without_band,
+            "explanation": f"{rule_info['explanation']} Without this signal, the score would be {without_score} ({without_band} risk)."
+        })
 
     return {
         "transaction_id": tx.id,

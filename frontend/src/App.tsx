@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { LanguageProvider } from './contexts/LanguageContext';
 import { DemoBanner } from './components/common/DemoBanner';
 import { Navbar } from './components/layout/Navbar';
 import { LoginPage } from './pages/LoginPage';
@@ -9,6 +10,7 @@ import { ReviewQueuePage } from './pages/ReviewQueuePage';
 import { NewPaymentPage } from './pages/NewPaymentPage';
 import { PaymentResultPage } from './pages/PaymentResultPage';
 import { BudgetsPage } from './pages/BudgetsPage';
+import { LearnPage } from './pages/LearnPage';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> = ({ children, roles }) => {
   const { user, loading } = useAuth();
@@ -95,7 +97,7 @@ function AppContent() {
             path="/learn"
             element={
               <ProtectedRoute roles={['customer']}>
-                <DashboardPage />
+                <LearnPage />
               </ProtectedRoute>
             }
           />
@@ -110,7 +112,9 @@ export function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppContent />
+        <LanguageProvider>
+          <AppContent />
+        </LanguageProvider>
       </AuthProvider>
     </BrowserRouter>
   );

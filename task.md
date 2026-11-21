@@ -78,14 +78,14 @@
   - [x] Live reconciliation UI panel
   - [x] Phase 3 Gate check & report (commit: `phase-3-verified`)
 
-- [ ] **Phase 4: Financial Awareness & Polish**
-  - [ ] Guidance library with official verified sources (1930, cybercrime.gov.in, Sanchar Saathi)
-  - [ ] Before-you-pay checklist
-  - [ ] Deterministic scam-message checker (unretained input)
-  - [ ] What-if / score breakdown panel
-  - [ ] English + Hindi bilingual support (i18n, key parity tests, `TODO_HINDI_REVIEW.md`)
-  - [ ] Responsive design (360px pass) & accessibility (WCAG AA, aria-live, tap targets >= 44px)
-  - [ ] Phase 4 Gate check & report (commit: `phase-4-verified`)
+- [x] **Phase 4: Financial Awareness & Polish**
+  - [x] Guidance library with official verified sources (1930, cybercrime.gov.in, Sanchar Saathi)
+  - [x] Before-you-pay checklist
+  - [x] Deterministic scam-message checker (unretained input)
+  - [x] What-if / score breakdown panel
+  - [x] English + Hindi bilingual support (i18n, key parity tests, `TODO_HINDI_REVIEW.md`)
+  - [x] Responsive design (360px pass) & accessibility (WCAG AA, aria-live, tap targets >= 44px)
+  - [x] Phase 4 Gate check & report (commit: `phase-4-verified`)
 
 - [ ] **Phase 5: Evaluation & Demo Readiness**
   - [ ] Security audit (headers, CSP, CORS, slowapi rate limits)

@@ -3,8 +3,10 @@ import { useParams, useLocation, Link } from 'react-router-dom';
 import { ShieldCheck, AlertTriangle, ShieldAlert, CheckCircle, XCircle, ArrowLeft, Info, HelpCircle } from 'lucide-react';
 import { api, getErrorMessage } from '../services/api';
 import { formatPaise } from '../types';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export const PaymentResultPage: React.FC = () => {
+  const { t } = useLanguage();
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
 
@@ -233,36 +235,22 @@ export const PaymentResultPage: React.FC = () => {
           </h2>
 
           {reasons.length === 0 ? (
-            <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-500 text-center">
-              No risk signals were triggered for this payment. It matches your typical spending profile.
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-500 text-center font-medium">
+              {t('pay.no_risk_signals')}
             </div>
           ) : (
             <div className="space-y-2.5">
               {reasons.map((r: any, idx: number) => (
                 <div key={idx} className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-start justify-between gap-3">
-                  <div className="space-y-0.5">
+                  <div className="space-y-1">
                     <div className="flex items-center space-x-2">
                       <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-slate-200 text-slate-700 rounded">
                         {r.rule_code}
                       </span>
                       <span className="text-xs font-bold text-slate-800">
-                        {r.rule_code === 'R1' && 'Unusually Large Amount (> 3x historical mean)'}
-                        {r.rule_code === 'R2' && 'First-Time / Unfamiliar Payee'}
-                        {r.rule_code === 'R3' && 'Unusual Hour (Transaction between 11 PM and 5 AM)'}
-                        {r.rule_code === 'R4' && 'High Velocity Burst (≥ 3 payments in last 5 minutes)'}
-                        {r.rule_code === 'R5' && 'Unseen Synthetic Device or City'}
-                        {r.rule_code === 'R6' && 'Payee Flagged on Fraud Security Watchlist'}
-                        {r.rule_code === 'R7' && 'Threshold / Repeat Amount Pattern'}
-                        {r.rule_code === 'R8' && 'Scam Language / Pressure Term in Note'}
-                        {r.rule_code === 'R9' && 'Drains Balance (Payment > 80% of funds)'}
-                        {r.rule_code === 'R10' && 'Unknown UPI Collect Request Approval'}
+                        {t(`risk.reason.${r.rule_code}`, r.params || {})}
                       </span>
                     </div>
-                    {r.params && (
-                      <p className="text-[11px] text-slate-500 font-mono pl-0.5">
-                        {JSON.stringify(r.params)}
-                      </p>
-                    )}
                   </div>
                   <span className="text-xs font-bold text-slate-700 bg-white border border-slate-200 px-2 py-0.5 rounded-full shrink-0">
                     +{r.points} pts
@@ -272,18 +260,33 @@ export const PaymentResultPage: React.FC = () => {
             </div>
           )}
 
-          {/* What-If / Score Reduction Breakdown (§10) */}
+          {/* What-If / Score Reduction Breakdown (§10, D18) */}
           {breakdown?.what_would_change && breakdown.what_would_change.length > 0 && (
-            <div className="mt-4 p-4 bg-indigo-50/70 border border-indigo-200 rounded-xl space-y-2">
-              <h3 className="text-xs font-bold text-indigo-950 flex items-center space-x-1.5">
-                <HelpCircle className="w-3.5 h-3.5 text-indigo-600" />
-                <span>What Would Change This Score? (§10)</span>
-              </h3>
-              <div className="space-y-1.5">
+            <div className="mt-4 p-4 bg-indigo-50/70 border border-indigo-200 rounded-xl space-y-2.5">
+              <div>
+                <h3 className="text-xs font-bold text-indigo-950 flex items-center space-x-1.5">
+                  <HelpCircle className="w-4 h-4 text-indigo-600" />
+                  <span>{t('pay.what_would_change_title')}</span>
+                </h3>
+                <p className="text-[11px] text-indigo-800/80 mt-0.5">
+                  {t('pay.what_would_change_subtitle')}
+                </p>
+              </div>
+              <div className="space-y-2 pt-1 border-t border-indigo-200/60">
                 {breakdown.what_would_change.map((w: any, i: number) => (
-                  <div key={i} className="text-[11px] text-indigo-900 flex items-start space-x-2">
-                    <span className="text-indigo-600 font-bold">•</span>
-                    <span>{w.explanation}</span>
+                  <div key={i} className="text-xs text-indigo-950 bg-white/70 p-2.5 rounded-lg border border-indigo-200/50 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                    <div className="space-y-0.5">
+                      <div className="font-semibold text-slate-900">{w.explanation}</div>
+                      <div className="text-[11px] text-indigo-700 font-medium">
+                        {t('pay.without_signal', {
+                          without_score: w.without_signal_score,
+                          without_band: w.without_signal_band,
+                        })}
+                      </div>
+                    </div>
+                    <span className="text-[11px] font-bold text-indigo-800 bg-indigo-100 px-2 py-0.5 rounded self-start sm:self-auto shrink-0">
+                      -{w.reduction_points} pts
+                    </span>
                   </div>
                 ))}
               </div>
