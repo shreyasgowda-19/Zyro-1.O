@@ -5,8 +5,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { Navbar } from './components/layout/Navbar';
 import { CustomerLoginPage } from './pages/CustomerLoginPage';
-import { ReviewerLoginPage } from './pages/ReviewerLoginPage';
-import { SupervisorLoginPage } from './pages/SupervisorLoginPage';
+import { BankingLoginPage } from './pages/BankingLoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ReviewQueuePage } from './pages/ReviewQueuePage';
 import { NewPaymentPage } from './pages/NewPaymentPage';
@@ -26,16 +25,16 @@ const AccessDenied: React.FC<{ userRole: string }> = ({ userRole }) => {
           <ShieldAlert className="w-8 h-8" />
         </div>
         <h2 className="text-xl font-bold text-white mb-2">
-          {isCustomerAttemptingStaff ? 'Restricted Internal Operations Area' : 'Customer Banking Area Restricted'}
+          {isCustomerAttemptingStaff ? 'Restricted Bank Operations Area' : 'Customer Banking Area Restricted'}
         </h2>
         <p className="text-xs text-slate-300 mb-6 leading-relaxed">
           {isCustomerAttemptingStaff ? (
             <>
-              Access Denied: The <strong>Fraud Review Console</strong> is strictly restricted to authorized fraud analysts and compliance supervisors. Customer accounts cannot enter or inspect internal review queues.
+              Access Denied: The <strong>Banking Operations Portal</strong> is strictly restricted to authorized bank officers and compliance managers. Customer accounts cannot enter or inspect internal clearance queues.
             </>
           ) : (
             <>
-              Fraud review and compliance personnel cannot access customer personal banking dashboards to preserve separation of duties.
+              Bank operations officers and compliance managers cannot access customer personal banking dashboards to preserve separation of duties.
             </>
           )}
         </p>
@@ -44,16 +43,16 @@ const AccessDenied: React.FC<{ userRole: string }> = ({ userRole }) => {
             onClick={() => navigate(userRole === 'customer' ? '/dashboard' : '/review')}
             className="px-4 py-2.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold transition"
           >
-            {userRole === 'customer' ? '← Return to My Dashboard' : '← Return to Review Queue'}
+            {userRole === 'customer' ? '← Return to My Dashboard' : '← Return to Bank Portal'}
           </button>
           <button
             onClick={() => {
               logout();
-              navigate(isCustomerAttemptingStaff ? '/login/reviewer' : '/login/customer');
+              navigate(isCustomerAttemptingStaff ? '/login/banking' : '/login/customer');
             }}
             className="px-4 py-2.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-medium transition"
           >
-            {isCustomerAttemptingStaff ? 'Sign In as Staff →' : 'Sign In as Customer →'}
+            {isCustomerAttemptingStaff ? 'Sign in to Banking Portal →' : 'Sign in as Customer →'}
           </button>
         </div>
       </div>
@@ -94,13 +93,31 @@ function AppContent() {
         <Routes>
           <Route path="/login" element={<Navigate to="/login/customer" replace />} />
           <Route path="/login/customer" element={<CustomerLoginPage />} />
-          <Route path="/login/reviewer" element={<ReviewerLoginPage />} />
-          <Route path="/login/supervisor" element={<SupervisorLoginPage />} />
+          <Route path="/login/banking" element={<BankingLoginPage />} />
+          <Route path="/login/bank" element={<Navigate to="/login/banking" replace />} />
+          <Route path="/login/reviewer" element={<Navigate to="/login/banking" replace />} />
+          <Route path="/login/supervisor" element={<Navigate to="/login/banking" replace />} />
           <Route
             path="/dashboard"
             element={
               <ProtectedRoute roles={['customer']}>
                 <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/banking"
+            element={
+              <ProtectedRoute roles={['reviewer', 'supervisor']}>
+                <ReviewQueuePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/banking/*"
+            element={
+              <ProtectedRoute roles={['reviewer', 'supervisor']}>
+                <ReviewQueuePage />
               </ProtectedRoute>
             }
           />

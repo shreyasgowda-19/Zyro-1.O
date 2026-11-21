@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ShieldCheck, User, AlertCircle, Lock, ArrowRight, ShieldAlert, Sparkles } from 'lucide-react';
+import { ShieldCheck, User, AlertCircle, Lock, ArrowRight, ShieldAlert, Sparkles, Building2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export const CustomerLoginPage: React.FC = () => {
@@ -22,7 +22,7 @@ export const CustomerLoginPage: React.FC = () => {
         navigate('/dashboard');
       } else {
         // Logged in with staff credentials on customer portal
-        setError(`You are signed in as a ${loggedUser.role}. Redirecting to your staff portal...`);
+        setError(`Bank Staff Account detected (${loggedUser.role}). Redirecting to Banking Portal...`);
         setTimeout(() => navigate('/review'), 1200);
       }
     } catch (err: any) {
@@ -34,27 +34,22 @@ export const CustomerLoginPage: React.FC = () => {
 
   return (
     <div className="min-h-[calc(100vh-80px)] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
-      {/* Role Portal Navigation Tabs */}
+      {/* Primary Portal Navigation Tabs */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md mb-6">
-        <div className="flex rounded-lg bg-slate-200/80 p-1 border border-slate-300/80 shadow-2xs">
+        <div className="flex rounded-xl bg-slate-200/80 p-1 border border-slate-300/80 shadow-2xs">
           <Link
             to="/login/customer"
-            className="flex-1 py-2 text-center text-xs font-semibold rounded-md bg-white text-teal-700 shadow-xs flex items-center justify-center space-x-1.5 transition"
+            className="flex-1 py-2 text-center text-xs font-semibold rounded-lg bg-white text-teal-700 shadow-xs flex items-center justify-center space-x-1.5 transition"
           >
             <User className="w-3.5 h-3.5" />
             <span>Customer Portal</span>
           </Link>
           <Link
-            to="/login/reviewer"
+            to="/login/banking"
             className="flex-1 py-2 text-center text-xs font-medium text-slate-600 hover:text-slate-900 transition flex items-center justify-center space-x-1.5"
           >
-            <span>Fraud Reviewer</span>
-          </Link>
-          <Link
-            to="/login/supervisor"
-            className="flex-1 py-2 text-center text-xs font-medium text-slate-600 hover:text-slate-900 transition flex items-center justify-center space-x-1.5"
-          >
-            <span>Supervisor</span>
+            <Building2 className="w-3.5 h-3.5 text-indigo-600" />
+            <span>Banking Portal</span>
           </Link>
         </div>
       </div>
@@ -175,9 +170,9 @@ export const CustomerLoginPage: React.FC = () => {
 
           <div className="mt-6 pt-5 border-t border-slate-100 text-center space-y-2">
             <p className="text-[11px] text-slate-500">
-              Need internal access?{' '}
-              <Link to="/login/reviewer" className="font-semibold text-amber-700 hover:underline">
-                Fraud Review Console →
+              Bank Officer or Branch Manager?{' '}
+              <Link to="/login/banking" className="font-semibold text-indigo-600 hover:underline">
+                Banking Operations Portal →
               </Link>
             </p>
           </div>

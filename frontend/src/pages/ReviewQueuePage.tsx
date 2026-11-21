@@ -125,14 +125,14 @@ export const ReviewQueuePage: React.FC = () => {
       {/* Top Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs">
         <div>
-          <span className="text-xs font-semibold text-purple-600 uppercase tracking-wider block mb-0.5">
-            {user?.role === 'supervisor' ? 'Supervisor Risk Authority' : 'Fraud Review Console'}
+          <span className="text-xs font-semibold text-indigo-600 uppercase tracking-wider block mb-0.5">
+            {user?.role === 'supervisor' ? 'Branch Risk Manager & Supervisor' : 'Banking Operations Portal'}
           </span>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-            Human Review Queue
+            Transaction Clearance & Risk Queue
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Inspect flagged high-risk payments. Customer identities and payees are masked under strict privacy boundaries.
+            Official banking queue for held high-risk transactions. Review, verify, and authorize transaction releases under strict regulatory boundaries.
           </p>
         </div>
 

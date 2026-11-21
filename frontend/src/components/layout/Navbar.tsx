@@ -33,7 +33,7 @@ export const Navbar: React.FC = () => {
                   PayGuard <span className="text-teal-400 font-extrabold">360</span>
                 </span>
                 <span className="block text-[10px] text-slate-400 tracking-wider uppercase font-medium">
-                  {isReviewer ? 'Fraud Operations Console' : 'Customer Banking Portal'}
+                  {isReviewer ? 'Banking Operations Portal' : 'Customer Banking Portal'}
                 </span>
               </div>
             </Link>
@@ -91,7 +91,7 @@ export const Navbar: React.FC = () => {
                       }`}
                     >
                       <ShieldCheck className="w-4 h-4" />
-                      <span>Review Queue</span>
+                      <span>Clearance Queue</span>
                     </Link>
                     <Link
                       to="/review/audit"
