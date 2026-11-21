@@ -398,3 +398,73 @@ npm run build
 - [x] Frontend builds cleanly with zero errors in 2.12s: PASS
 
 **Gate Status: PASS (CHECKPOINT REACHED — STOPPING FOR OPERATOR SIGN-OFF)**
+
+---
+
+## [Phase 3] - Smart Budgeting, Analytics, Savings Goals & Reconciliation UI
+
+### Work Done:
+1. Implemented Budgeting Service & Schemas (`backend/app/schemas/budget.py` & `backend/app/services/budget_service.py`):
+   - Monthly overall budget and per-category budgets CRUD.
+   - Budget summary calculation strictly from **completed** expenses (`Transaction.type == 'expense' and Transaction.status == 'completed'`).
+   - Proactive 80% warning (`alert.budget.approaching_limit`) and 100% limit exceeded (`alert.budget.limit_exceeded`) alerts with deduplication keys `(user_id, period, category, budget_amount)`.
+   - Real-time alert evaluation hooks wired into payment completion, reviewer approval, manual expenses, and category patches.
+2. Implemented Savings Goals Service & Schemas (`backend/app/schemas/goal.py` & `backend/app/services/goal_service.py`):
+   - Savings goals CRUD with target dates and progress percentages.
+   - Goal contributions with strict funds verification against available ledger balances, rejecting over-contributions with `INSUFFICIENT_FUNDS` (409).
+3. Implemented Cash Flow & Category Analytics (`backend/app/services/analytics_service.py`):
+   - `GET /accounting/cashflow`: Computes daily income, expenses, and net cash flow points plus monthly totals.
+   - `GET /accounting/categories`: Groups completed spending by category with exact percentages.
+4. Implemented Routers:
+   - `backend/app/routers/budgets.py`: `/budgets` CRUD and `/budgets/summary`.
+   - `backend/app/routers/goals.py`: `/goals` CRUD and `/goals/{id}/contributions`.
+   - `backend/app/routers/accounting.py`: Mounted `/accounting/cashflow` and `/accounting/categories`.
+5. Implemented Frontend Budgeting & Goals View (`frontend/src/pages/BudgetsPage.tsx`):
+   - Monthly period selector (`YYYY-MM`).
+   - Overall monthly budget progress bar with color-coded threshold states (emerald <80%, amber 80–99%, rose >=100%).
+   - Category budgets grid with spent vs limit progress bars.
+   - Cash Flow summary metrics and daily breakdown table.
+   - Spending by category breakdown with percentage meters.
+   - Savings goals cards with progress and contribution modal.
+   - Set Budget, New Goal, Contribute, and Record Manual Transaction modals.
+   - Live 4/4 reconciliation badge.
+6. Automated Test Suite (`backend/tests/test_phase3.py`):
+   - 5 comprehensive automated tests covering budget CRUD & RBAC, summary accuracy ensuring held payments never count as expenses, 80% and 100% alert firing with deduplication, savings goals CRUD & balance-capped contributions, and cash flow/category analytics.
+
+### Commands Run & Output:
+```bash
+cd backend
+python -m pytest tests/test_phase3.py -v
+# Output:
+# ======================= 5 passed, 116 warnings in 2.80s =======================
+
+python -m pytest tests -v
+# Output:
+# ====================== 72 passed, 287 warnings in 16.56s ======================
+
+cd ../frontend
+npx vitest run
+# Output:
+# Test Files  1 passed (1)
+#      Tests  8 passed (8)
+#   Duration  338ms
+
+npm run build
+# Output:
+# ✓ built in 2.72s
+```
+
+### Gate Checklist (Phase 3):
+- [x] Budget summary uses real API data without mock/hardcoded values: PASS
+- [x] Completed simulated payments appear as expenses exactly once: PASS
+- [x] Held, escalated, and released payments never count towards budget spent: PASS
+- [x] 80% warning and 100% exceeded alerts fire with explainable params: PASS
+- [x] Budget alert deduplication prevents redundant alerts: PASS
+- [x] Savings goals support progress tracking and earmark contributions: PASS
+- [x] Over-contributions exceeding available ledger balance rejected with 409: PASS
+- [x] Cash flow trends and category distribution calculated from ledger: PASS
+- [x] Live reconciliation panel displays 4/4 check consistency: PASS
+- [x] All 72 backend automated tests and 8 frontend unit tests passing: PASS
+- [x] Frontend builds cleanly with zero errors in 2.72s: PASS
+
+**Gate Status: PASS**

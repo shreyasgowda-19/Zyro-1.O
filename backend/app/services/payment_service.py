@@ -290,6 +290,8 @@ def create_payment(
         # First completed payment moves payee new -> known (§7)
         if payee.trust_status == "new":
             payee.trust_status = "known"
+        from app.services.budget_service import evaluate_budget_alerts
+        evaluate_budget_alerts(db, user.id, tx.created_at.strftime("%Y-%m"))
 
     elif target_status == "held":
         # Create hold_review Case (§9, §12)
@@ -426,6 +428,9 @@ def confirm_payment(db: Session, user: User, payment_id: int) -> Dict[str, Any]:
         safe_metadata_json=json.dumps({"amount_paise": tx.amount_paise}),
         created_at=datetime.now(timezone.utc)
     ))
+
+    from app.services.budget_service import evaluate_budget_alerts
+    evaluate_budget_alerts(db, user.id, tx.created_at.strftime("%Y-%m"))
 
     db.commit()
     return {"id": tx.id, "status": "completed", "message": "Payment confirmed and completed successfully"}

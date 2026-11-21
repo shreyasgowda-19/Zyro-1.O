@@ -115,6 +115,72 @@ export interface ReconciliationResult {
   checks: ReconciliationCheck[];
 }
 
+export interface Budget {
+  id: number;
+  user_id: number;
+  category?: string | null;
+  amount_paise: number;
+  period: string;
+  created_at: string;
+}
+
+export interface CategoryBudgetSummary {
+  category: string;
+  budget_paise?: number | null;
+  spent_paise: number;
+  remaining_paise?: number | null;
+  percentage?: number | null;
+}
+
+export interface OverallBudgetSummary {
+  budget_paise?: number | null;
+  spent_paise: number;
+  remaining_paise?: number | null;
+  percentage?: number | null;
+}
+
+export interface BudgetSummary {
+  period: string;
+  overall: OverallBudgetSummary;
+  categories: CategoryBudgetSummary[];
+}
+
+export interface SavingsGoal {
+  id: number;
+  user_id: number;
+  title: string;
+  target_paise: number;
+  current_paise: number;
+  target_date?: string | null;
+  progress_percentage: number;
+  created_at: string;
+}
+
+export interface CashflowPoint {
+  date: string;
+  income_paise: number;
+  expenses_paise: number;
+  net_paise: number;
+}
+
+export interface CashflowAnalytics {
+  period: string;
+  total_income_paise: number;
+  total_expenses_paise: number;
+  net_cashflow_paise: number;
+  daily: CashflowPoint[];
+}
+
+export interface CategoryAnalytics {
+  period: string;
+  total_spent_paise: number;
+  categories: Array<{
+    category: string;
+    amount_paise: number;
+    percentage: number;
+  }>;
+}
+
 export function formatPaise(paise: number, showDecimals = true): string {
   const isNegative = paise < 0;
   const absPaise = Math.abs(Math.round(paise));

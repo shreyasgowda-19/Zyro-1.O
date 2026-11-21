@@ -8,6 +8,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { ReviewQueuePage } from './pages/ReviewQueuePage';
 import { NewPaymentPage } from './pages/NewPaymentPage';
 import { PaymentResultPage } from './pages/PaymentResultPage';
+import { BudgetsPage } from './pages/BudgetsPage';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> = ({ children, roles }) => {
   const { user, loading } = useAuth();
@@ -86,7 +87,7 @@ function AppContent() {
             path="/budgets"
             element={
               <ProtectedRoute roles={['customer']}>
-                <DashboardPage />
+                <BudgetsPage />
               </ProtectedRoute>
             }
           />

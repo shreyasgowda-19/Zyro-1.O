@@ -222,6 +222,9 @@ def record_case_decision(
             related_transaction_id=tx.id
         )
 
+        from app.services.budget_service import evaluate_budget_alerts
+        evaluate_budget_alerts(db, tx.user_id, tx.created_at.strftime("%Y-%m"))
+
     elif action == "reject":
         validate_transition(tx.status, "released")
         tx.status = "released"

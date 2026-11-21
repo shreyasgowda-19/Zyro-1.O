@@ -1,4 +1,16 @@
-import type { User, Transaction, ReviewCase, AlertItem, ReconciliationResult, BalanceSummary } from '../types';
+import type {
+  User,
+  Transaction,
+  ReviewCase,
+  AlertItem,
+  ReconciliationResult,
+  BalanceSummary,
+  Budget,
+  BudgetSummary,
+  SavingsGoal,
+  CashflowAnalytics,
+  CategoryAnalytics,
+} from '../types';
 
 export class ApiError extends Error {
   code: string;
@@ -181,5 +193,87 @@ export const api = {
 
   getRiskBreakdown: async (transactionId: number): Promise<any> => {
     return request(`/risk/assessments/${transactionId}/breakdown`);
+  },
+
+  // Budgeting & Analytics
+  getBudgets: async (period?: string): Promise<Budget[]> => {
+    const query = period ? `?period=${period}` : '';
+    return request(`/budgets${query}`);
+  },
+
+  createBudget: async (data: { category?: string; amount_paise: number; period: string }): Promise<Budget> => {
+    return request('/budgets', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  updateBudget: async (id: number, amount_paise: number): Promise<Budget> => {
+    return request(`/budgets/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ amount_paise }),
+    });
+  },
+
+  deleteBudget: async (id: number): Promise<{ status: string; message: string }> => {
+    return request(`/budgets/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  getBudgetSummary: async (period?: string): Promise<BudgetSummary> => {
+    const query = period ? `?period=${period}` : '';
+    return request(`/budgets/summary${query}`);
+  },
+
+  // Savings Goals
+  getGoals: async (): Promise<SavingsGoal[]> => {
+    return request('/goals');
+  },
+
+  createGoal: async (data: { title: string; target_paise: number; target_date?: string }): Promise<SavingsGoal> => {
+    return request('/goals', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  updateGoal: async (id: number, data: { title?: string; target_paise?: number; target_date?: string }): Promise<SavingsGoal> => {
+    return request(`/goals/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  },
+
+  contributeGoal: async (id: number, amount_paise: number): Promise<SavingsGoal> => {
+    return request(`/goals/${id}/contributions`, {
+      method: 'POST',
+      body: JSON.stringify({ amount_paise }),
+    });
+  },
+
+  deleteGoal: async (id: number): Promise<{ status: string; message: string }> => {
+    return request(`/goals/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Cash Flow & Category Analytics
+  getCashflow: async (period?: string): Promise<CashflowAnalytics> => {
+    const query = period ? `?period=${period}` : '';
+    return request(`/accounting/cashflow${query}`);
+  },
+
+  getCategoryAnalytics: async (period?: string): Promise<CategoryAnalytics> => {
+    const query = period ? `?period=${period}` : '';
+    return request(`/accounting/categories${query}`);
+  },
+
+  // Manual Transactions (Cash/Income)
+  createManualTransaction: async (data: { type: string; amount_paise: number; category: string; note?: string; created_at?: string }): Promise<Transaction> => {
+    return request('/transactions', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
   },
 };

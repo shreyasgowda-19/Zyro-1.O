@@ -102,6 +102,10 @@ def create_manual_transaction(
     db.add(tx)
     db.commit()
 
+    if tx.type == "expense" and tx.status == "completed":
+        from app.services.budget_service import evaluate_budget_alerts
+        evaluate_budget_alerts(db, current_user.id, tx.created_at.strftime("%Y-%m"))
+
     return {
         "id": tx.id,
         "user_id": tx.user_id,
@@ -136,6 +140,10 @@ def patch_transaction_category(
 
     tx.category = patch_req.category
     db.commit()
+
+    if tx.type == "expense" and tx.status == "completed":
+        from app.services.budget_service import evaluate_budget_alerts
+        evaluate_budget_alerts(db, current_user.id, tx.created_at.strftime("%Y-%m"))
 
     return {
         "id": tx.id,
