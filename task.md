@@ -87,10 +87,10 @@
   - [x] Responsive design (360px pass) & accessibility (WCAG AA, aria-live, tap targets >= 44px)
   - [x] Phase 4 Gate check & report (commit: `phase-4-verified`)
 
-- [ ] **Phase 5: Evaluation & Demo Readiness**
-  - [ ] Security audit (headers, CSP, CORS, slowapi rate limits)
-  - [ ] Startup checks & OpenAPI auth validation
-  - [ ] Point-in-time evaluation (`scripts/evaluate.py` -> `docs/EVALUATION.md`)
-  - [ ] Automated verification script (`scripts/demo_check.py` covering D1–D18)
-  - [ ] Documentation (`README.md`, `DEMO_SCRIPT.md`, `DEMO_READ_ALOUD.md`, `JUDGE_DEMO_EVIDENCE.md`, `docs/JUDGE_QA.md`, `docs/ARCHITECTURE.md`, `docs/SECURITY.md`)
-  - [ ] Phase 5 Gate check & report (commit: `phase-5-verified`)
+- [x] **Phase 5: Evaluation & Demo Readiness**
+  - [x] Security audit (headers, CSP, CORS, slowapi rate limits)
+  - [x] Startup checks & OpenAPI auth validation
+  - [x] Point-in-time evaluation (`scripts/evaluate.py` -> `docs/EVALUATION.md`)
+  - [x] Automated verification script (`scripts/demo_check.py` covering D1–D18)
+  - [x] Documentation (`README.md`, `DEMO_SCRIPT.md`, `DEMO_READ_ALOUD.md`, `JUDGE_DEMO_EVIDENCE.md`, `docs/JUDGE_QA.md`, `docs/ARCHITECTURE.md`, `docs/SECURITY.md`)
+  - [x] Phase 5 Gate check & report (commit: `phase-5-verified`)

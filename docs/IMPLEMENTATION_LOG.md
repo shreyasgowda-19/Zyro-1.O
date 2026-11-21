@@ -551,3 +551,79 @@ npm run build
 - [x] Frontend builds cleanly with zero errors in 2.75s: PASS
 
 **Gate Status: PASS**
+
+
+---
+
+## [Phase 5] Evaluation, Security Audit, Demo Readiness & Hackathon Deliverables
+
+### Date: 2026-11-21
+### Status: VERIFIED
+### Work Done:
+- Developed and ran `scripts/evaluate.py`:
+  - 300 holdout synthetic transactions (seed 1337) with hard negatives.
+  - Generated comprehensive evaluation report in `docs/EVALUATION.md`.
+  - Medium+ Recall: 100.0%, Precision: 100.0%.
+  - High-Only Recall: 42.5%, Precision: 100.0%.
+  - Hard Negative False Hold Rate: 0.0% (zero false holds on legitimate travel/new payee alone).
+  - Average Rule Execution Latency: 0.18 ms.
+- Implemented and verified `scripts/demo_check.py`:
+  - Validates all 18 Definition of Done items (D1–D18) in 1.09s.
+  - Verified demo reset latency of 0.18s–0.32s (< 5.0s target).
+- Authored comprehensive security tests in `backend/tests/test_security_review.py`:
+  - Verified OWASP security headers (CSP, X-Content-Type-Options, X-Frame-Options, Strict-Transport-Security, Referrer-Policy).
+  - Verified OpenAPI route authentication coverage (all operational endpoints require Bearer auth except public health, auth, guidance, and demo endpoints).
+  - Verified startup checks enforce production security assertions (non-empty JWT secret, DEMO_MODE flag).
+- Authored hackathon presentation and documentation assets:
+  - `README.md`: One-line pitch, 3-command quick start, seeded demo accounts table, architecture diagrams, security, evaluation summary.
+  - `DEMO_SCRIPT.md`: 3-minute timed live demo script and operator cues (§22).
+  - `DEMO_READ_ALOUD.md`: Exact presenter narration script and cues (§26.2).
+  - `JUDGE_DEMO_EVIDENCE.md`: Concrete inputs, actual responses, balance invariants, and test transcripts (§26.5).
+  - `docs/JUDGE_QA.md`: Comprehensive answers to all 18 judge questions + hackathon questions (§24).
+  - `docs/ARCHITECTURE.md`: Architecture overview, pure risk engine contract, balance equations, and payment lifecycle state machine.
+  - `docs/SECURITY.md`: Threat model (STRIDE), credential protection, zero-retention privacy, and gaming defense.
+  - `docs/HACKATHON_FEASIBILITY.md`: Full status board, feasibility evidence, critical path, and cut order.
+
+### Commands Run & Output:
+```bash
+python scripts/evaluate.py
+# Output:
+# Evaluation completed successfully!
+# Results written to: docs/EVALUATION.md
+# Holdout Medium+ Recall: 100.0%, Precision: 100.0%
+# Holdout High-Only Recall: 42.5%, Precision: 100.0%
+
+python scripts/demo_check.py
+# Output:
+# ALL 18 DEFINITION OF DONE CHECKS PASSED (Total time: 1.09s)
+
+cd backend
+python -m pytest tests -v
+# Output:
+# ====================== 80 passed, 323 warnings in 12.64s ======================
+
+cd ../frontend
+npx vitest run
+# Output:
+# Test Files  3 passed (3)
+#      Tests  15 passed (15)
+#   Duration  523ms
+
+npm run build
+# Output:
+# ✓ 2171 modules transformed.
+# dist/assets/index-B2Bf_ceu.js   417.23 kB │ gzip: 117.99 kB
+# ✓ built in 2.16s
+```
+
+### Gate Checklist (Phase 5):
+- [x] Security audit passes (headers, OpenAPI auth coverage, startup checks): PASS
+- [x] Automated Definition of Done validation script (D1–D18) passing: PASS (18/18 in 1.09s)
+- [x] Point-in-time evaluation (`docs/EVALUATION.md`) completed with real metrics: PASS
+- [x] 80 backend automated tests passing with 0 failures: PASS
+- [x] 15 frontend unit tests passing with 0 failures: PASS
+- [x] Frontend builds cleanly with zero errors in 2.16s: PASS
+- [x] `README.md`, `DEMO_SCRIPT.md`, `DEMO_READ_ALOUD.md`, `JUDGE_DEMO_EVIDENCE.md`, `docs/JUDGE_QA.md`, `docs/ARCHITECTURE.md`, `docs/SECURITY.md` authored: PASS
+- [x] Demo reset confirmed in 0.18s (< 5.0s requirement): PASS
+
+**Gate Status: PASS**
