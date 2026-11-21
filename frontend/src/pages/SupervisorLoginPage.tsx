@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ShieldCheck, Scale, AlertCircle, Lock, ArrowRight, User, Sparkles, Award } from 'lucide-react';
+import { ShieldCheck, Scale, AlertCircle, Lock, ArrowRight, User, Award } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export const SupervisorLoginPage: React.FC = () => {
@@ -10,7 +10,6 @@ export const SupervisorLoginPage: React.FC = () => {
   const [password, setPassword] = useState('password123');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [showDemoHints, setShowDemoHints] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,29 +121,7 @@ export const SupervisorLoginPage: React.FC = () => {
                 <Award className="w-3.5 h-3.5 text-purple-400 mr-1" />
                 Senior Authority Level 2
               </span>
-              <button
-                type="button"
-                onClick={() => setShowDemoHints(!showDemoHints)}
-                className="text-purple-400 hover:text-purple-300 font-medium flex items-center space-x-1"
-              >
-                <Sparkles className="w-3 h-3 text-purple-400" />
-                <span>{showDemoHints ? 'Hide Hints' : 'Supervisor Credential'}</span>
-              </button>
             </div>
-
-            {showDemoHints && (
-              <div className="bg-slate-950 border border-purple-900/50 rounded-lg p-3 text-[11px] text-slate-300 space-y-1.5">
-                <div className="font-semibold text-purple-300">Supervisor Credentials:</div>
-                <button
-                  type="button"
-                  onClick={() => { setUsername('vikram_supervisor'); setPassword('password123'); }}
-                  className="w-full text-left px-2.5 py-1.5 bg-slate-900 border border-purple-900/60 rounded hover:bg-slate-800 text-purple-200 flex items-center justify-between"
-                >
-                  <span>vikram_supervisor</span>
-                  <span className="text-[10px] text-slate-400">Click to fill</span>
-                </button>
-              </div>
-            )}
 
             <button
               type="submit"

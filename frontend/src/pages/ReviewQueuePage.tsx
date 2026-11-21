@@ -220,7 +220,7 @@ export const ReviewQueuePage: React.FC = () => {
               <CheckCircle className="w-10 h-10 text-emerald-500 mx-auto" />
               <h3 className="text-sm font-bold text-slate-800">Review Queue Empty</h3>
               <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                No cases match the selected filters. Use the Demo Simulator to launch high-risk scenarios.
+                No cases match the selected filters. All transactions have been processed or cleared.
               </p>
             </div>
           ) : (

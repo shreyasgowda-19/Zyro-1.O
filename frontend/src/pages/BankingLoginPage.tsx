@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Building2, ShieldCheck, UserCheck, AlertCircle, Lock, ArrowRight, User, Sparkles, Scale } from 'lucide-react';
+import { Building2, ShieldCheck, UserCheck, AlertCircle, Lock, ArrowRight, User, Scale } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export const BankingLoginPage: React.FC = () => {
@@ -11,7 +11,6 @@ export const BankingLoginPage: React.FC = () => {
   const [password, setPassword] = useState('password123');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [showDemoHints, setShowDemoHints] = useState(false);
 
   const handleRoleTabChange = (role: 'officer' | 'manager') => {
     setSelectedRole(role);
@@ -157,39 +156,7 @@ export const BankingLoginPage: React.FC = () => {
                 <span className="w-2 h-2 rounded-full bg-emerald-400 mr-1.5 animate-pulse" />
                 {selectedRole === 'officer' ? 'Transaction Clearance Level 1' : 'Executive Authority Level 2'}
               </span>
-              <button
-                type="button"
-                onClick={() => setShowDemoHints(!showDemoHints)}
-                className="text-indigo-400 hover:text-indigo-300 font-medium flex items-center space-x-1"
-              >
-                <Sparkles className="w-3 h-3 text-amber-400" />
-                <span>{showDemoHints ? 'Hide Hints' : 'Quick Fill'}</span>
-              </button>
             </div>
-
-            {showDemoHints && (
-              <div className="bg-slate-900/90 border border-slate-700 rounded-lg p-3 text-[11px] text-slate-300 space-y-2">
-                <div className="font-semibold text-indigo-300">Authorized Bank Credentials:</div>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => { setSelectedRole('officer'); setUsername('ananya_reviewer'); setPassword('password123'); }}
-                    className="p-2 bg-slate-800 border border-slate-700 rounded text-left hover:bg-slate-700"
-                  >
-                    <div className="text-amber-400 font-semibold">Bank Officer</div>
-                    <div className="text-[10px] text-slate-400">ananya_reviewer</div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { setSelectedRole('manager'); setUsername('vikram_supervisor'); setPassword('password123'); }}
-                    className="p-2 bg-slate-800 border border-slate-700 rounded text-left hover:bg-slate-700"
-                  >
-                    <div className="text-purple-400 font-semibold">Branch Manager</div>
-                    <div className="text-[10px] text-slate-400">vikram_supervisor</div>
-                  </button>
-                </div>
-              </div>
-            )}
 
             <button
               type="submit"

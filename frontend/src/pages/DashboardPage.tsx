@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Send, AlertTriangle, ShieldCheck, ShieldAlert, Sparkles, RefreshCw, Eye, Bell } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Send, AlertTriangle, ShieldCheck, ShieldAlert, RefreshCw, Eye, Bell } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { api, getErrorMessage } from '../services/api';
 import type { BalanceSummary, AlertItem, Transaction, ReconciliationResult } from '../types';
 import { formatPaise } from '../types';
-import { DemoSimulatorModal } from '../components/common/DemoSimulatorModal';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export const DashboardPage: React.FC = () => {
-  const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = useLanguage();
   const [balances, setBalances] = useState<BalanceSummary>({
@@ -22,7 +20,6 @@ export const DashboardPage: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [isSimulatorOpen, setIsSimulatorOpen] = useState<boolean>(false);
 
   useEffect(() => {
     loadDashboardData();
@@ -76,15 +73,6 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         <div className="flex items-center space-x-3">
-          <button
-            type="button"
-            onClick={() => setIsSimulatorOpen(true)}
-            className="inline-flex items-center space-x-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-3.5 py-2 rounded-xl text-xs font-semibold transition"
-          >
-            <Sparkles className="w-4 h-4 text-indigo-500" />
-            <span>Demo Attack Presets</span>
-          </button>
-
           <Link
             to="/pay"
             className="inline-flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-xs transition"
@@ -287,16 +275,6 @@ export const DashboardPage: React.FC = () => {
           </div>
         )}
       </div>
-
-      {/* Demo Simulator Modal */}
-      <DemoSimulatorModal
-        isOpen={isSimulatorOpen}
-        onClose={() => setIsSimulatorOpen(false)}
-        onScenarioSelect={() => {
-          setIsSimulatorOpen(false);
-          navigate('/pay');
-        }}
-      />
     </div>
   );
 };

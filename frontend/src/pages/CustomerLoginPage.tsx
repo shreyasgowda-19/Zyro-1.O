@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ShieldCheck, User, AlertCircle, Lock, ArrowRight, ShieldAlert, Sparkles, Building2 } from 'lucide-react';
+import { ShieldCheck, User, AlertCircle, Lock, ArrowRight, ShieldAlert, Building2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export const CustomerLoginPage: React.FC = () => {
@@ -10,7 +10,6 @@ export const CustomerLoginPage: React.FC = () => {
   const [password, setPassword] = useState('password123');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [showDemoHints, setShowDemoHints] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,44 +118,7 @@ export const CustomerLoginPage: React.FC = () => {
                 <input type="checkbox" defaultChecked className="rounded border-slate-300 text-teal-600 focus:ring-teal-500 mr-2" />
                 Remember Customer ID
               </label>
-              <button
-                type="button"
-                onClick={() => setShowDemoHints(!showDemoHints)}
-                className="text-teal-600 hover:text-teal-700 font-medium flex items-center space-x-1"
-              >
-                <Sparkles className="w-3 h-3 text-amber-500" />
-                <span>{showDemoHints ? 'Hide Accounts' : 'Sample Accounts'}</span>
-              </button>
             </div>
-
-            {showDemoHints && (
-              <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-[11px] text-slate-600 space-y-1.5 animate-in fade-in">
-                <div className="font-semibold text-slate-800">Quick Test Credentials (Password: password123):</div>
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  <button
-                    type="button"
-                    onClick={() => { setUsername('rahul_personal'); setPassword('password123'); }}
-                    className="px-2 py-1 bg-white border border-slate-300 rounded hover:bg-slate-100 text-slate-800"
-                  >
-                    rahul_personal (Salaried)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { setUsername('priya_personal'); setPassword('password123'); }}
-                    className="px-2 py-1 bg-white border border-slate-300 rounded hover:bg-slate-100 text-slate-800"
-                  >
-                    priya_personal (Freelancer)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { setUsername('sharma_kirana'); setPassword('password123'); }}
-                    className="px-2 py-1 bg-white border border-slate-300 rounded hover:bg-slate-100 text-slate-800"
-                  >
-                    sharma_kirana (Merchant)
-                  </button>
-                </div>
-              </div>
-            )}
 
             <button
               type="submit"

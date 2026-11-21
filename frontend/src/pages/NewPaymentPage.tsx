@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Send, Shield, AlertTriangle, CheckSquare, Square, Clock, Sparkles } from 'lucide-react';
+import { Send, Shield, AlertTriangle, CheckSquare, Square, Clock } from 'lucide-react';
 import { api, getErrorMessage } from '../services/api';
 import { formatPaise } from '../types';
-import { DemoSimulatorModal } from '../components/common/DemoSimulatorModal';
 
 export const NewPaymentPage: React.FC = () => {
   const navigate = useNavigate();
@@ -25,9 +24,8 @@ export const NewPaymentPage: React.FC = () => {
 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [isSimulatorOpen, setIsSimulatorOpen] = useState<boolean>(false);
 
-  // Check if a scenario was stored in sessionStorage by simulator
+  // Check if a prefilled scenario was provided in sessionStorage
   useEffect(() => {
     const raw = sessionStorage.getItem('prefilled_scenario');
     if (raw) {
@@ -54,7 +52,7 @@ export const NewPaymentPage: React.FC = () => {
     setSimulatedAt(p.simulated_at || '');
     if (p.synthetic_device_tag) setSyntheticDevice(p.synthetic_device_tag);
     if (p.synthetic_city_tag) setSyntheticCity(p.synthetic_city_tag);
-    // Pre-check checklist for quick simulator demo
+    // Pre-check verification checklist
     setCheckPayee(true);
     setCheckNoPressure(true);
     setCheckDetails(true);
@@ -99,28 +97,17 @@ export const NewPaymentPage: React.FC = () => {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      {/* Top Banner & Simulator Launcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs">
-        <div>
-          <span className="text-xs font-semibold text-teal-600 uppercase tracking-wider block mb-0.5">
-            Pre-Payment Fraud Analysis
-          </span>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-            Send Simulated Payment
-          </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Every payment is evaluated in real time against 10 explainable risk rules before funds move.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setIsSimulatorOpen(true)}
-          className="inline-flex items-center space-x-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-3.5 py-2 rounded-xl text-xs font-semibold transition shrink-0"
-        >
-          <Sparkles className="w-4 h-4 text-indigo-500" />
-          <span>Demo Attack Presets</span>
-        </button>
+      {/* Top Banner */}
+      <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs">
+        <span className="text-xs font-semibold text-teal-600 uppercase tracking-wider block mb-0.5">
+          Pre-Payment Fraud Analysis
+        </span>
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+          Send Payment
+        </h1>
+        <p className="text-xs text-slate-500 mt-0.5">
+          Every payment is evaluated in real time against 10 explainable risk rules before funds move.
+        </p>
       </div>
 
       {/* Credential Notice Banner (§0.2, §11) */}
@@ -255,22 +242,19 @@ export const NewPaymentPage: React.FC = () => {
             />
           </div>
 
-          {/* Simulated Time (Optional for testing R3) */}
+          {/* Scheduled Time (Optional) */}
           {simulatedAt && (
-            <div className="space-y-1 sm:col-span-2 bg-indigo-50/60 p-3 rounded-lg border border-indigo-200">
-              <label className="text-xs font-semibold text-indigo-900 flex items-center space-x-1.5">
-                <Clock className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Simulated Timestamp (DEMO MODE)</span>
+            <div className="space-y-1 sm:col-span-2 bg-slate-50 p-3 rounded-lg border border-slate-200">
+              <label className="text-xs font-semibold text-slate-700 flex items-center space-x-1.5">
+                <Clock className="w-3.5 h-3.5 text-slate-500" />
+                <span>Scheduled Execution Timestamp</span>
               </label>
               <input
                 type="text"
                 value={simulatedAt}
                 onChange={(e) => setSimulatedAt(e.target.value)}
-                className="w-full px-3 py-1.5 text-xs bg-white border border-indigo-200 rounded font-mono text-slate-700"
+                className="w-full px-3 py-1.5 text-xs bg-white border border-slate-200 rounded font-mono text-slate-700"
               />
-              <p className="text-[10px] text-indigo-700">
-                Timestamp loaded from scenario preset. Allows deterministic evaluation of unusual hour rule (R3).
-              </p>
             </div>
           )}
         </div>
@@ -363,13 +347,6 @@ export const NewPaymentPage: React.FC = () => {
           </button>
         </div>
       </form>
-
-      {/* Simulator Modal */}
-      <DemoSimulatorModal
-        isOpen={isSimulatorOpen}
-        onClose={() => setIsSimulatorOpen(false)}
-        onScenarioSelect={(sc) => applyScenario(sc)}
-      />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ShieldAlert, UserCheck, AlertCircle, Lock, ArrowRight, User, Sparkles } from 'lucide-react';
+import { ShieldAlert, UserCheck, AlertCircle, Lock, ArrowRight, User } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export const ReviewerLoginPage: React.FC = () => {
@@ -10,7 +10,6 @@ export const ReviewerLoginPage: React.FC = () => {
   const [password, setPassword] = useState('password123');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [showDemoHints, setShowDemoHints] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,29 +121,7 @@ export const ReviewerLoginPage: React.FC = () => {
                 <span className="w-2 h-2 rounded-full bg-emerald-400 mr-1.5 animate-pulse" />
                 Audit Trail Active
               </span>
-              <button
-                type="button"
-                onClick={() => setShowDemoHints(!showDemoHints)}
-                className="text-amber-400 hover:text-amber-300 font-medium flex items-center space-x-1"
-              >
-                <Sparkles className="w-3 h-3 text-amber-400" />
-                <span>{showDemoHints ? 'Hide Hints' : 'Reviewer Credential'}</span>
-              </button>
             </div>
-
-            {showDemoHints && (
-              <div className="bg-slate-900/80 border border-slate-700 rounded-lg p-3 text-[11px] text-slate-300 space-y-1.5">
-                <div className="font-semibold text-amber-400">Reviewer Credentials:</div>
-                <button
-                  type="button"
-                  onClick={() => { setUsername('ananya_reviewer'); setPassword('password123'); }}
-                  className="w-full text-left px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded hover:bg-slate-700 text-amber-300 flex items-center justify-between"
-                >
-                  <span>ananya_reviewer</span>
-                  <span className="text-[10px] text-slate-400">Click to fill</span>
-                </button>
-              </div>
-            )}
 
             <button
               type="submit"
