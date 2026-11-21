@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ShieldCheck, LogOut, ArrowRightLeft, LayoutDashboard, Send, History, PieChart, BookOpen } from 'lucide-react';
+import { ShieldCheck, LogOut, ArrowRightLeft, LayoutDashboard, Send, History, PieChart, BookOpen, Sparkles } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { DemoSimulatorModal } from '../common/DemoSimulatorModal';
 
 export const Navbar: React.FC = () => {
   const { user, logout, switchAccount } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isSimulatorOpen, setIsSimulatorOpen] = useState<boolean>(false);
 
   const handleLogout = () => {
     logout();
@@ -125,6 +127,15 @@ export const Navbar: React.FC = () => {
           {/* Right Controls: Quick Switcher & User Profile */}
           {user ? (
             <div className="flex items-center space-x-3">
+              <button
+                type="button"
+                onClick={() => setIsSimulatorOpen(true)}
+                className="hidden sm:inline-flex items-center space-x-1.5 bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-700/60 text-indigo-300 px-2.5 py-1 rounded text-xs font-semibold transition"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <span>Simulator</span>
+              </button>
+
               <div className="hidden sm:flex items-center space-x-1.5 bg-slate-800/80 px-2 py-1 rounded border border-slate-700 text-xs">
                 <ArrowRightLeft className="w-3.5 h-3.5 text-slate-400" />
                 <select
@@ -168,6 +179,10 @@ export const Navbar: React.FC = () => {
           )}
         </div>
       </div>
+      <DemoSimulatorModal
+        isOpen={isSimulatorOpen}
+        onClose={() => setIsSimulatorOpen(false)}
+      />
     </header>
   );
 };

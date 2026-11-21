@@ -29,13 +29,13 @@
   - [x] Auth & foundation tests pass (7 backend, 8 frontend)
   - [x] Phase 1 Gate check & report (tag: `phase-1-verified`)
 
-- [ ] **Phase 2a: Explainable Fraud Risk Engine (Pure, Deterministic)**
-  - [ ] `backend/app/risk_rules.json` (schema-validated config)
-  - [ ] Pure `risk_engine.py` implementation (R1–R10, capped at 100, bands: Low 0-39, Medium 40-69, High 70-100)
-  - [ ] All fixtures F1–F11 passing
-  - [ ] Unit & property tests (boundary, cap, ordering, cold start, 100% line & branch coverage)
-  - [ ] `docs/RULES.md`
-  - [ ] Phase 2a Gate check & report (commit: `phase-2a-verified`)
+- [x] **Phase 2a: Explainable Fraud Risk Engine (Pure, Deterministic)**
+  - [x] `backend/app/risk_rules.json` (schema-validated config)
+  - [x] Pure `risk_engine.py` implementation (R1–R10, capped at 100, bands: Low 0-39, Medium 40-69, High 70-100)
+  - [x] All fixtures F1–F11 passing
+  - [x] Unit & property tests (boundary, cap, ordering, cold start, 100% line & branch coverage)
+  - [x] `docs/RULES.md`
+  - [x] Phase 2a Gate check & report (commit: `phase-2a-verified`)
 
 - [x] **Phase 2b: Accounting, Lifecycle, Credential Guard, Payment API**
   - [x] `credential_guard.py` (Luhn, OTP/PIN proximity, script-text filter, never logs sensitive input)
@@ -56,17 +56,17 @@
   - [x] Append-only DB triggers verification tests
   - [x] Phase 2c Gate check & report (commit: `phase-2c-verified`)
 
-- [ ] **Phase 2d: Customer Pay, Risk Result, Reviewer UI, Simulator, Reset (CHECKPOINT STOP)**
-  - [ ] Frontend API client & central error layer
-  - [ ] Demo banner ("DEMO MODE — NO REAL MONEY MOVES") & credential notice
-  - [ ] Customer payment flow (form, before-you-pay checklist, risk result with score/reasons/badge)
-  - [ ] Medium confirmation & High held flows
-  - [ ] Reviewer UI (queue, case detail, mandatory note, approve/reject/escalate, supervisor resolution)
-  - [ ] Customer alert drawer & transaction receipt
-  - [ ] Demo simulator presets (F1 Low, F2 Medium, F3 High, F4 Burst, F5 Collect Request) + Reset button
-  - [ ] One-command reset verification (`< 5s`)
-  - [ ] End-to-end integration tests & verification
-  - [ ] Phase 2d Checkpoint Gate check & report (commit: `phase-2d-verified`)
+- [x] **Phase 2d: Customer Pay, Risk Result, Reviewer UI, Simulator, Reset (CHECKPOINT STOP)**
+  - [x] Frontend API client & central error layer
+  - [x] Demo banner ("DEMO MODE — NO REAL MONEY MOVES") & credential notice
+  - [x] Customer payment flow (form, before-you-pay checklist, risk result with score/reasons/badge)
+  - [x] Medium confirmation & High held flows
+  - [x] Reviewer UI (queue, case detail, mandatory note, approve/reject/escalate, supervisor resolution)
+  - [x] Customer alert drawer & transaction receipt
+  - [x] Demo simulator presets (F1 Low, F2 Medium, F3 High, F4 Burst, F5 Collect Request) + Reset button
+  - [x] One-command reset verification (`< 5s`)
+  - [x] End-to-end integration tests & verification (`backend/tests/test_phase2d.py` 10/10 passing)
+  - [x] Phase 2d Checkpoint Gate check & report (commit: `phase-2d-verified`)
   - [ ] **STOP AND WAIT FOR OPERATOR SIGN-OFF**
 
 - [ ] **Phase 3: Smart Budgeting & Reconciliation UI**

@@ -84,6 +84,8 @@ export interface ReviewCase {
   actions?: Array<{
     id: number;
     actor_id: number;
+    actor_username?: string;
+    actor_role?: string;
     action: string;
     note: string;
     created_at: string;

@@ -12,7 +12,7 @@ from slowapi.errors import RateLimitExceeded
 
 from app.config import settings, BASE_DIR
 from app.errors import AppError, app_error_handler, validation_error_handler, http_exception_handler
-from app.routers import auth, health, payments, transactions, accounting, review, alerts
+from app.routers import auth, health, payments, transactions, accounting, review, alerts, demo, risk
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -100,3 +100,5 @@ app.include_router(transactions.router)
 app.include_router(accounting.router)
 app.include_router(review.router)
 app.include_router(alerts.router)
+app.include_router(demo.router)
+app.include_router(risk.router)

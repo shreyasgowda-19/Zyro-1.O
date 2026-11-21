@@ -161,7 +161,7 @@ npm run build
 
 **Gate Status: PASS**
 
----
+
 
 ## Phase 2a: Explainable Fraud Risk Engine (Pure, Deterministic)
 
@@ -326,3 +326,75 @@ npm run build
 - [x] All 57 backend tests and 8 frontend tests passing: PASS
 
 **Gate Status: PASS**
+
+---
+
+## [Phase 2d] - Customer Pay, Risk Result, Reviewer UI, Simulator & Demo Reset (Checkpoint)
+
+### Work Done:
+1. Implemented Demo & Simulator Backend Endpoints (`backend/app/routers/demo.py`):
+   - `GET /demo/scenarios`: Returns 5 pre-configured attack presets (F1 Baseline Low, F2 Unusual Amount Medium, F3 Flagged Late Night High, F4 Burst Velocity High, F5 Collect Request Scam High).
+   - `POST /demo/reset`: One-click instant demo database wipe and re-seed, executing in < 5.0 seconds (actual: 0.22s).
+2. Implemented Risk Breakdown Endpoints (`backend/app/routers/risk.py`):
+   - `GET /risk/assessments/{id}`: Returns score, band, rules version, features, and explainable reasons (`code + params`).
+   - `GET /risk/assessments/{id}/breakdown`: Returns fired reasons and "What would change this score" reduction recommendations for customer empowerment.
+3. Implemented Frontend API Client & State Management (`frontend/src/services/api.ts`):
+   - Strongly-typed payment creation, confirmation, and cancellation.
+   - Risk assessment retrieval and score breakdown methods.
+   - Review queue filtering, case detail retrieval, and decision submission with optimistic locking.
+   - Demo scenario loading and one-click demo database reset.
+4. Implemented Customer Payment Experience:
+   - `NewPaymentPage.tsx`: Live integer paise formatting, 3-point pre-payment safety checklist, credential notice banner, idempotency key generation.
+   - `PaymentResultPage.tsx`: Prominent score badge (0–100) and risk band color (emerald, amber, rose), explainable reasons list, "What would reduce this score" panel, explicit Confirm/Cancel action buttons for Medium risk, reserved funds hold banner for High risk.
+5. Upgraded Reviewer Console (`frontend/src/pages/ReviewQueuePage.tsx`):
+   - Real-time filterable queue (all, open, escalated, closed, hold_review, post_review).
+   - Case Inspector Modal displaying risk score, fired reasons, features JSON, transaction lifecycle metadata, and immutable action timeline.
+   - Decision submission with mandatory note validation (5–500 chars), separation of duties notice, and optimistic locking `expected_version`.
+   - Append-Only Audit Trail tab viewing chronological immutable compliance events.
+6. Implemented Demo Simulator Modal (`frontend/src/components/common/DemoSimulatorModal.tsx`):
+   - Quick launcher in top navigation bar (`Navbar.tsx`).
+   - 1-click loading of F1–F5 attack scenarios directly into New Payment form.
+   - Simulated Time status indicator.
+   - One-click demo database reset with confirmation dialog and timing measurement.
+7. Automated Test Suite (`backend/tests/test_phase2d.py`):
+   - 10 automated end-to-end integration tests covering scenario presets, demo reset speed (< 5s), risk assessment RBAC and breakdown, Low risk completion, Medium risk confirmation and cancellation, High risk hold and reviewer approval/rejection, escalation and two-person supervisor resolution, and credential guard rejection.
+
+### Commands Run & Output:
+```bash
+cd backend
+python -m pytest tests/test_phase2d.py -v
+# Output:
+# ====================== 10 passed, 107 warnings in 4.16s =======================
+
+python -m pytest tests -v
+# Output:
+# ====================== 67 passed, 219 warnings in 11.78s ======================
+
+cd ../frontend
+npx vitest run
+# Output:
+# Test Files  1 passed (1)
+#      Tests  8 passed (8)
+#   Duration  271ms
+
+npm run build
+# Output:
+# ✓ built in 2.12s
+```
+
+### Gate Checklist (Phase 2d):
+- [x] Demo banner "DEMO MODE — NO REAL MONEY MOVES" persistent in UI: PASS
+- [x] Credential warning "PayGuard 360 will never ask for your PIN, OTP or password" visible: PASS
+- [x] Payment form formats integer paise in real time without floating-point math: PASS
+- [x] Low risk completes immediately and shows receipt: PASS
+- [x] Medium risk prompts explicit customer confirmation and cancellation options: PASS
+- [x] High risk payment holds funds, reserves balance, and routes to reviewer queue: PASS
+- [x] Reviewer case inspector modal displays score, band, reasons, and features: PASS
+- [x] Mandatory note (5–500 chars) enforced for reviewer actions: PASS
+- [x] Escalation requires supervisor resolution with separation of duties: PASS
+- [x] Demo simulator modal allows 1-click execution of F1–F5 attack scenarios: PASS
+- [x] Demo reset restores seeded state in 0.22s (< 5.0s target): PASS
+- [x] All 67 backend automated tests and 8 frontend unit tests passing: PASS
+- [x] Frontend builds cleanly with zero errors in 2.12s: PASS
+
+**Gate Status: PASS (CHECKPOINT REACHED — STOPPING FOR OPERATOR SIGN-OFF)**

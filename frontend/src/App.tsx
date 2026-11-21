@@ -6,6 +6,8 @@ import { Navbar } from './components/layout/Navbar';
 import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ReviewQueuePage } from './pages/ReviewQueuePage';
+import { NewPaymentPage } from './pages/NewPaymentPage';
+import { PaymentResultPage } from './pages/PaymentResultPage';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> = ({ children, roles }) => {
   const { user, loading } = useAuth();
@@ -60,7 +62,15 @@ function AppContent() {
             path="/pay"
             element={
               <ProtectedRoute roles={['customer']}>
-                <DashboardPage />
+                <NewPaymentPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/payments/:id/result"
+            element={
+              <ProtectedRoute roles={['customer']}>
+                <PaymentResultPage />
               </ProtectedRoute>
             }
           />

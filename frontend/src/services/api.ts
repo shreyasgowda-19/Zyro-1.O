@@ -19,6 +19,38 @@ export class ApiError extends Error {
   }
 }
 
+export function getErrorMessage(err: any): string {
+  if (err instanceof ApiError) {
+    switch (err.code) {
+      case 'INSUFFICIENT_FUNDS':
+        return 'Insufficient available funds for this payment. Please check your available balance.';
+      case 'CREDENTIAL_INPUT_REJECTED':
+        return 'Security Alert: Credential detected. PayGuard 360 will never ask for your PIN, OTP, or CVV.';
+      case 'INVALID_TEXT':
+        return 'Invalid input: script tags and unsafe text patterns are blocked.';
+      case 'NOTE_REQUIRED':
+        return 'Review action requires a justification note between 5 and 500 characters.';
+      case 'CASE_CONFLICT':
+        return 'Case Conflict: This review case was modified by another reviewer. Please refresh and try again.';
+      case 'ILLEGAL_TRANSITION':
+        return 'Illegal state transition: This transaction cannot be transitioned in its current state.';
+      case 'IDEMPOTENCY_CONFLICT':
+        return 'Duplicate submission detected with different transaction payload.';
+      case 'FORBIDDEN':
+        return 'Access denied: You do not have permission to perform this action.';
+      case 'NOT_FOUND':
+        return 'Requested record was not found.';
+      case 'VALIDATION_ERROR':
+        return 'Validation error: Please verify payment amount (₹1 to ₹2,00,000) and required fields.';
+      case 'UNAUTHENTICATED':
+        return 'Session expired. Please log in again.';
+      default:
+        return err.message || 'An unexpected error occurred.';
+    }
+  }
+  return err?.message || 'Network error or server unavailable.';
+}
+
 const BASE_URL = '';
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -79,13 +111,13 @@ export const api = {
     });
   },
 
-  confirmPayment: async (paymentId: number): Promise<Transaction> => {
+  confirmPayment: async (paymentId: number): Promise<{ id: number; status: string; message: string }> => {
     return request(`/payments/${paymentId}/confirm`, {
       method: 'POST',
     });
   },
 
-  cancelPayment: async (paymentId: number): Promise<Transaction> => {
+  cancelPayment: async (paymentId: number): Promise<{ id: number; status: string; message: string }> => {
     return request(`/payments/${paymentId}/cancel`, {
       method: 'POST',
     });
@@ -99,8 +131,12 @@ export const api = {
     return request('/transactions');
   },
 
-  getReviewCases: async (): Promise<ReviewCase[]> => {
-    return request('/review/cases');
+  getReviewCases: async (status?: string, caseType?: string): Promise<{ items: ReviewCase[]; total: number }> => {
+    const params = new URLSearchParams();
+    if (status) params.append('status', status);
+    if (caseType) params.append('case_type', caseType);
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return request(`/review/cases${query}`);
   },
 
   getReviewCase: async (caseId: number): Promise<ReviewCase> => {
@@ -114,23 +150,36 @@ export const api = {
     });
   },
 
-  getAlerts: async (): Promise<AlertItem[]> => {
-    return request('/alerts');
+  getReviewAudit: async (caseId?: number): Promise<{ items: any[]; total: number }> => {
+    const query = caseId ? `?case_id=${caseId}` : '';
+    return request(`/review/audit${query}`);
   },
 
-  markAlertRead: async (alertId: number): Promise<void> => {
+  getAlerts: async (unreadOnly: boolean = false): Promise<{ items: AlertItem[]; unread_count: number }> => {
+    return request(`/alerts?unread_only=${unreadOnly}`);
+  },
+
+  markAlertRead: async (alertId: number): Promise<AlertItem> => {
     return request(`/alerts/${alertId}/read`, {
       method: 'POST',
     });
   },
 
-  getScenarios: async (): Promise<any[]> => {
+  getScenarios: async (): Promise<{ scenarios: any[] }> => {
     return request('/demo/scenarios');
   },
 
-  resetDemo: async (): Promise<{ message: string; elapsed_seconds: number }> => {
+  resetDemo: async (): Promise<{ status: string; message: string; duration_seconds: number }> => {
     return request('/demo/reset', {
       method: 'POST',
     });
+  },
+
+  getRiskAssessment: async (transactionId: number): Promise<any> => {
+    return request(`/risk/assessments/${transactionId}`);
+  },
+
+  getRiskBreakdown: async (transactionId: number): Promise<any> => {
+    return request(`/risk/assessments/${transactionId}/breakdown`);
   },
 };
