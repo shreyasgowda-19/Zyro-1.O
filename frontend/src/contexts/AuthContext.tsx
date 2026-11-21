@@ -6,7 +6,7 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   loading: boolean;
-  login: (username: string, password?: string) => Promise<void>;
+  login: (username: string, password?: string) => Promise<User>;
   logout: () => void;
   switchAccount: (username: string) => Promise<void>;
 }
@@ -39,13 +39,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loadUser();
   }, [token]);
 
-  const login = async (username: string, password = 'password123') => {
+  const login = async (username: string, password = 'password123'): Promise<User> => {
     setLoading(true);
     try {
       const res = await api.login(username, password);
       sessionStorage.setItem('payguard_token', res.access_token);
       setToken(res.access_token);
       setUser(res.user);
+      return res.user;
     } finally {
       setLoading(false);
     }

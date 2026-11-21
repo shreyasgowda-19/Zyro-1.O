@@ -2,9 +2,10 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
-import { DemoBanner } from './components/common/DemoBanner';
 import { Navbar } from './components/layout/Navbar';
-import { LoginPage } from './pages/LoginPage';
+import { CustomerLoginPage } from './pages/CustomerLoginPage';
+import { ReviewerLoginPage } from './pages/ReviewerLoginPage';
+import { SupervisorLoginPage } from './pages/SupervisorLoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ReviewQueuePage } from './pages/ReviewQueuePage';
 import { NewPaymentPage } from './pages/NewPaymentPage';
@@ -40,11 +41,13 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> 
 function AppContent() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
-      <DemoBanner />
       <Navbar />
       <main className="flex-1">
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/login" element={<Navigate to="/login/customer" replace />} />
+          <Route path="/login/customer" element={<CustomerLoginPage />} />
+          <Route path="/login/reviewer" element={<ReviewerLoginPage />} />
+          <Route path="/login/supervisor" element={<SupervisorLoginPage />} />
           <Route
             path="/dashboard"
             element={
