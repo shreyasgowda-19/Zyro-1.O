@@ -93,3 +93,38 @@ npx vitest run
 - [x] Money formatter with Indian digit grouping tests pass: PASS
 
 **Gate Status: PASS**
+
+---
+
+## Phase 2a: Explainable Fraud Risk Engine (Pure, Deterministic)
+
+**Date:** 2026-11-21  
+**Scope:** `risk_rules.json`, pure deterministic `risk_engine.py`, 100% test coverage, fixtures F1–F11, boundary conditions, property tests, `docs/RULES.md`.
+
+### Commands Run & Actual Output:
+
+```powershell
+cd backend
+python -m pytest tests/test_risk_engine.py --cov=app.services.risk_engine --cov-report=term-missing
+# Output:
+# collected 20 items
+# tests\test_risk_engine.py ....................                           [100%]
+# Name                          Stmts   Miss  Cover   Missing
+# -----------------------------------------------------------
+# app\services\risk_engine.py     159      0   100%
+# -----------------------------------------------------------
+# TOTAL                           159      0   100%
+# ============================= 20 passed in 0.15s ==============================
+```
+
+### Gate Checklist (Phase 2a):
+- [x] All fixtures F1–F11 implemented and passing: PASS
+- [x] All 10 rules R1–R10 implemented and evaluated in a single run: PASS
+- [x] Integer paise math throughout: PASS
+- [x] Score capped at 100: PASS
+- [x] Cold-start logic (n < 5 skips R1, R5, halves R2 to 7): PASS
+- [x] Timezone conversion to IST (`Asia/Kolkata`) for R3: PASS
+- [x] Line and branch coverage target achieved (100%): PASS
+- [x] `docs/RULES.md` created: PASS
+
+**Gate Status: PASS**
