@@ -54,7 +54,7 @@ export const StatementQueuePage: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-5">
       <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-900 text-white rounded-2xl p-6">
-        <div className="flex items-start gap-3"><ShieldAlert className="w-6 h-6 text-amber-300 mt-1" /><div><h1 className="text-xl font-bold">Statement Approval Queue</h1><p className="mt-1 text-xs text-slate-300">Review PayGuard activity statement requests. Approval releases a customer report; it does not certify bank records.</p></div></div>
+        <div className="flex items-start gap-3"><ShieldAlert className="w-6 h-6 text-amber-300 mt-1" /><div><h1 className="text-xl font-bold">Statement Approval Queue</h1><p className="mt-1 text-xs text-slate-300">Review FinShield activity statement requests. Approval releases a customer report; it does not certify bank records.</p></div></div>
         <button onClick={() => void loadQueue()} disabled={loading} className="inline-flex items-center gap-1.5 rounded-lg bg-slate-700 px-3 py-2 text-xs font-semibold hover:bg-slate-600 disabled:opacity-50"><RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh</button>
       </header>
 

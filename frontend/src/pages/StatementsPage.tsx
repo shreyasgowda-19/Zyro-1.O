@@ -183,7 +183,7 @@ export const StatementsPage: React.FC = () => {
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement('a');
       anchor.href = url;
-      anchor.download = `payguard_activity_${requestId}.csv`;
+      anchor.download = `finshield_activity_${requestId}.csv`;
       anchor.click();
       URL.revokeObjectURL(url);
     } catch (err: any) { setError(err?.message || 'Could not download this statement.'); }
@@ -196,7 +196,7 @@ export const StatementsPage: React.FC = () => {
           <div className="rounded-xl bg-indigo-50 text-indigo-700 p-3"><FileText className="w-6 h-6" /></div>
           <div><h1 className="text-2xl font-bold text-slate-900">Statements</h1><p className="mt-1 text-sm text-slate-600">Import your own transaction CSV, or request an activity statement for manager approval.</p></div>
         </div>
-        <p className="mt-4 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-900">CSV rows are parsed in your browser; the original file is not saved. Imported rows are marked as customer-entered. PayGuard reports are not official bank statements and do not connect to your bank.</p>
+        <p className="mt-4 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-900">CSV rows are parsed in your browser; the original file is not saved. Imported rows are marked as customer-entered. FinShield reports are not official bank statements and do not connect to your bank.</p>
       </header>
 
       {(error || notice) && <div role={error ? 'alert' : 'status'} className={`rounded-xl border p-3 text-sm flex items-center gap-2 ${error ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-emerald-50 border-emerald-200 text-emerald-800'}`}>{error ? <AlertCircle className="w-4 h-4 shrink-0" /> : null}<span>{error || notice}</span></div>}

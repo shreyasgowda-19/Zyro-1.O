@@ -148,7 +148,7 @@ export const CustomerLoginPage: React.FC = () => {
         {/* Security Assurance Footer */}
         <div className="mt-4 flex items-center justify-center space-x-1.5 text-[11px] text-slate-500">
           <ShieldAlert className="w-3.5 h-3.5 text-teal-600" />
-          <span>PayGuard 360 will never ask for your PIN, OTP, or CVV.</span>
+          <span>FinShield will never ask for your PIN, OTP, or CVV.</span>
         </div>
       </div>
     </div>

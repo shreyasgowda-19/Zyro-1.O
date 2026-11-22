@@ -166,7 +166,7 @@ export const PaymentResultPage: React.FC = () => {
                 <div className="text-xs space-y-1">
                   <p className="font-bold">Explicit Confirmation Required</p>
                   <p className="text-amber-800 text-[11px]">
-                    PayGuard 360 scored this payment as Medium Risk. Funds have NOT moved yet. You may cancel safely without penalty or proceed if you are confident.
+                    FinShield scored this payment as Medium Risk. Funds have NOT moved yet. You may cancel safely without penalty or proceed if you are confident.
                   </p>
                 </div>
               </div>

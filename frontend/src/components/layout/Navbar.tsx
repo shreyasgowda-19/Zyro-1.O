@@ -30,7 +30,7 @@ export const Navbar: React.FC = () => {
               </div>
               <div>
                 <span className="text-lg font-bold tracking-tight text-white flex items-center gap-1.5">
-                  PayGuard <span className="text-teal-400 font-extrabold">360</span>
+                  FinShield
                 </span>
                 <span className="block text-[10px] text-slate-400 tracking-wider uppercase font-medium">
                   {isReviewer ? 'Banking Operations Portal' : 'Customer Banking Portal'}

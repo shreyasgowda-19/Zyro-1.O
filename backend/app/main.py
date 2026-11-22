@@ -58,7 +58,7 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(
-    title="PayGuard 360 API",
+    title="FinShield API",
     description="Fraud-first financial safety platform for India — Prototype API",
     version="1.0.0",
     lifespan=lifespan

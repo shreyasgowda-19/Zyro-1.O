@@ -114,7 +114,7 @@ export const NewPaymentPage: React.FC = () => {
       <div className="bg-amber-50/80 border border-amber-200/90 rounded-xl p-4 flex items-start space-x-3">
         <Shield className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
         <div className="text-xs text-amber-900 space-y-0.5">
-          <p className="font-bold">PayGuard 360 will never ask for your PIN, OTP or password.</p>
+          <p className="font-bold">FinShield will never ask for your PIN, OTP or password.</p>
           <p className="text-amber-800 text-[11px]">
             Never enter payment credentials in notes or descriptions. Standalone digits and card numbers are actively blocked.
           </p>

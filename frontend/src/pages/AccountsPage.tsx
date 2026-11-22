@@ -118,7 +118,7 @@ export const AccountsPage: React.FC = () => {
             <h1 className="text-2xl font-bold text-slate-900">My Accounts</h1>
             <p className="mt-1 text-sm text-slate-600">Record accounts and balances you want to track in one place.</p>
             <p className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-              Balances are entered by you and do not update from your bank. These accounts are separate from PayGuard’s simulated payment balance.
+              Balances are entered by you and do not update from your bank. These accounts are separate from FinShield’s simulated payment balance.
             </p>
           </div>
         </div>

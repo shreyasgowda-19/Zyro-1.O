@@ -44,7 +44,7 @@ export function getErrorMessage(err: any): string {
       case 'INSUFFICIENT_FUNDS':
         return 'Insufficient available funds for this payment. Please check your available balance.';
       case 'CREDENTIAL_INPUT_REJECTED':
-        return 'Security Alert: Credential detected. PayGuard 360 will never ask for your PIN, OTP, or CVV.';
+        return 'Security Alert: Credential detected. FinShield will never ask for your PIN, OTP, or CVV.';
       case 'INVALID_TEXT':
         return 'Invalid input: script tags and unsafe text patterns are blocked.';
       case 'NOTE_REQUIRED':
