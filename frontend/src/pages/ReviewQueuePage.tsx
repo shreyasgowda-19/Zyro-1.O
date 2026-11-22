@@ -44,6 +44,14 @@ export const ReviewQueuePage: React.FC = () => {
     }
   }, [activeTab, statusFilter, caseTypeFilter]);
 
+  useEffect(() => {
+    // Supervisors should see forwarded cases immediately without having to
+    // discover and switch the status filter manually.
+    if (user?.role === 'supervisor') {
+      setStatusFilter((current) => current === 'open' ? '' : current);
+    }
+  }, [user?.role]);
+
   async function loadCases() {
     setLoading(true);
     setError(null);
@@ -76,13 +84,18 @@ export const ReviewQueuePage: React.FC = () => {
     setShowConfirmAction(false);
     try {
       const detailed = await api.getReviewCase(caseId);
-      setSelectedCase(detailed);
+      setSelectedCase({ ...detailed, id: detailed.id || caseId });
     } catch (err) {
       setError(getErrorMessage(err));
     }
   }
 
   function handleInitiateAction(action: string) {
+    const caseId = Number(selectedCase?.id);
+    if (!Number.isSafeInteger(caseId) || caseId <= 0) {
+      setDecisionError('This review case has no valid ID. Close it, refresh the queue, and reopen the case.');
+      return;
+    }
     const trimmed = decisionNote.trim();
     if (trimmed.length < 5) {
       setDecisionError('A mandatory justification note of at least 5 characters is required before taking action.');
@@ -95,13 +108,19 @@ export const ReviewQueuePage: React.FC = () => {
 
   async function handleConfirmDecision() {
     if (!selectedCase || !decisionAction) return;
+    const caseId = Number(selectedCase.id);
+    if (!Number.isSafeInteger(caseId) || caseId <= 0) {
+      setDecisionError('This review case has no valid ID. Close it, refresh the queue, and reopen the case.');
+      setShowConfirmAction(false);
+      return;
+    }
 
     setSubmitting(true);
     setDecisionError(null);
 
     try {
       const updated = await api.submitDecision(
-        selectedCase.id,
+        caseId,
         decisionAction,
         decisionNote.trim(),
         selectedCase.version
@@ -579,12 +598,18 @@ export const ReviewQueuePage: React.FC = () => {
                   ? 'Forward to Supervisor'
                   : decisionAction === 'approve'
                   ? 'Approve Payment'
-                  : 'Reject Payment'}
+                  : decisionAction === 'reject'
+                  ? 'Reject Payment'
+                  : decisionAction === 'mark_false_alarm'
+                  ? 'Clear Transaction (False Alarm)'
+                  : decisionAction === 'mark_confirmed_fraud'
+                  ? 'Confirm Fraud'
+                  : 'Confirm Decision'}
               </h3>
               <p className="text-xs text-slate-500">
                 {decisionAction === 'escalate'
                   ? `Forward Case #${selectedCase?.id} to the Branch Manager / Supervisor for final clearance? Your inspection findings will be attached.`
-                  : `Are you sure you want to execute ${decisionAction} on Case #${selectedCase?.id}? This decision will be logged permanently in the append-only audit trail.`}
+                  : `Are you sure you want to execute this decision on Case #${selectedCase?.id}? This decision will be logged permanently in the append-only audit trail.`}
               </p>
             </div>
             <div className="flex items-center justify-end space-x-2 pt-2">
@@ -602,7 +627,7 @@ export const ReviewQueuePage: React.FC = () => {
                 className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition flex items-center space-x-1"
               >
                 {submitting && <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin mr-1" />}
-                <span>Confirm & Submit</span>
+                <span>{submitting ? 'Submitting…' : 'Confirm & Submit'}</span>
               </button>
             </div>
           </div>

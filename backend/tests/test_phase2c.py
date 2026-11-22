@@ -352,6 +352,49 @@ def test_post_review_confirmed_fraud_flags_payee():
     assert alert is not None
     db.close()
 
+def test_post_review_escalation_keeps_completed_payment_and_supervisor_resolves():
+    reviewer_token = get_auth_token("ananya_reviewer")
+    supervisor_token = get_auth_token("vikram_supervisor")
+
+    queue = client.get(
+        "/review/cases?case_type=post_review&status=open",
+        headers={"Authorization": f"Bearer {reviewer_token}"}
+    )
+    case = queue.json()["items"][0]
+    case_id = case["id"]
+    tx_id = case["transaction_id"]
+
+    escalation = client.post(
+        f"/review/cases/{case_id}/decision",
+        headers={"Authorization": f"Bearer {reviewer_token}"},
+        json={
+            "action": "escalate",
+            "note": "Unusual activity needs supervisor review.",
+            "expected_version": case["version"]
+        }
+    )
+    assert escalation.status_code == 200, escalation.text
+    assert escalation.json()["status"] == "escalated"
+    assert escalation.json()["transaction_status"] == "completed"
+
+    db = SessionLocal()
+    assert db.query(Transaction).filter(Transaction.id == tx_id).first().status == "completed"
+    db.close()
+
+    resolution = client.post(
+        f"/review/cases/{case_id}/decision",
+        headers={"Authorization": f"Bearer {supervisor_token}"},
+        json={
+            "action": "mark_false_alarm",
+            "note": "Supervisor verified this transaction as legitimate.",
+            "expected_version": escalation.json()["version"]
+        }
+    )
+    assert resolution.status_code == 200, resolution.text
+    assert resolution.json()["status"] == "closed"
+    assert resolution.json()["decision"] == "false_alarm"
+    assert resolution.json()["transaction_status"] == "completed"
+
 
 # ============================================================================
 # 5. AUDIT LOG & APPEND-ONLY TRIGGERS (§12, §13)

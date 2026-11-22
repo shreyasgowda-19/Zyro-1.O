@@ -56,7 +56,7 @@ export function getErrorMessage(err: any): string {
       case 'IDEMPOTENCY_CONFLICT':
         return 'Duplicate submission detected with different transaction payload.';
       case 'FORBIDDEN':
-        return 'Access denied: You do not have permission to perform this action.';
+        return err.message || 'Access denied: You do not have permission to perform this action.';
       case 'NOT_FOUND':
         return 'Requested record was not found.';
       case 'VALIDATION_ERROR':
@@ -83,10 +83,23 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
-    ...options,
-    headers,
-  });
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), 15000);
+  let response: Response;
+  try {
+    response = await fetch(`${BASE_URL}${endpoint}`, {
+      ...options,
+      headers,
+      signal: options.signal ?? controller.signal,
+    });
+  } catch (err) {
+    if (controller.signal.aborted) {
+      throw new Error('The server did not respond within 15 seconds. Refresh this case before retrying to check whether the decision was recorded.');
+    }
+    throw err;
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
 
   const isJson = response.headers.get('content-type')?.includes('application/json');
   const data = isJson ? await response.json() : null;
@@ -96,6 +109,15 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   }
 
   return data as T;
+}
+
+function normalizeReviewCase(data: any, fallbackId?: number): ReviewCase {
+  const rawId = data?.id ?? data?.case_id ?? fallbackId;
+  const id = typeof rawId === 'number' ? rawId : Number(rawId);
+  if (!Number.isSafeInteger(id) || id <= 0) {
+    throw new Error('The review case response did not include a valid case ID. Refresh the queue and reopen the case.');
+  }
+  return { ...data, id } as ReviewCase;
 }
 
 export const api = {
@@ -226,18 +248,20 @@ export const api = {
     if (status) params.append('status', status);
     if (caseType) params.append('case_type', caseType);
     const query = params.toString() ? `?${params.toString()}` : '';
-    return request(`/review/cases${query}`);
+    const data = await request<{ items: any[]; total: number }>(`/review/cases${query}`);
+    return { ...data, items: (data.items || []).map(normalizeReviewCase) };
   },
 
   getReviewCase: async (caseId: number): Promise<ReviewCase> => {
-    return request(`/review/cases/${caseId}`);
+    return normalizeReviewCase(await request(`/review/cases/${caseId}`), caseId);
   },
 
   submitDecision: async (caseId: number, action: string, note: string, expectedVersion: number): Promise<ReviewCase> => {
-    return request(`/review/cases/${caseId}/decision`, {
+    const data = await request(`/review/cases/${caseId}/decision`, {
       method: 'POST',
       body: JSON.stringify({ action, note, expected_version: expectedVersion }),
     });
+    return normalizeReviewCase(data, caseId);
   },
 
   getReviewAudit: async (caseId?: number): Promise<{ items: any[]; total: number }> => {

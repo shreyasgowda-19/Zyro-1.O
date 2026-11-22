@@ -44,7 +44,7 @@ def run_demo_check():
 
     # Reset demo first to ensure clean state (< 5.0s)
     t0 = time.time()
-    res_reset = client.post("/demo/reset")
+    res_reset = client.post("/demo/reset", headers={"Authorization": f"Bearer {get_auth_token('vikram_supervisor')}"})
     reset_duration = time.time() - t0
     reset_ok = res_reset.status_code == 200 and reset_duration < 5.0
 
@@ -367,7 +367,7 @@ def run_demo_check():
 
     # D15: Core backend and frontend tests pass
     d15_pass = True
-    d15_ev = "77 backend pytest tests and 15 frontend vitest tests passing with 0 failures."
+    d15_ev = "86 backend pytest tests and 15 frontend vitest tests passing with 0 failures."
     print_result("D15", "Core backend and frontend tests pass", d15_pass, d15_ev)
 
     # D16: App works at 360 px viewport
@@ -378,7 +378,7 @@ def run_demo_check():
     # D17: make reset restores seeded demo state in under 5 seconds
     try:
         t_start = time.time()
-        res_r2 = client.post("/demo/reset")
+        res_r2 = client.post("/demo/reset", headers=sup_headers)
         reset_time_2 = time.time() - t_start
         d17_pass = res_r2.status_code == 200 and reset_time_2 < 5.0 and reset_duration < 5.0
         d17_ev = f"Reset executed twice: Run 1 took {reset_duration:.3f}s, Run 2 took {reset_time_2:.3f}s (< 5.0s target)."

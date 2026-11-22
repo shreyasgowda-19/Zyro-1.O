@@ -246,8 +246,18 @@ def record_case_decision(
         )
 
     elif action == "escalate":
-        validate_transition(tx.status, "escalated")
-        tx.status = "escalated"
+        # Hold-review escalations change the payment state because funds are
+        # still reserved. Post-review cases concern completed payments, so
+        # escalate only the case and leave the completed ledger entry intact.
+        if case.case_type == "hold_review":
+            validate_transition(tx.status, "escalated")
+            tx.status = "escalated"
+        elif tx.status != "completed":
+            raise AppError(
+                "ILLEGAL_TRANSITION",
+                f"Cannot escalate a post-review case while its transaction is '{tx.status}'.",
+                status_code=400
+            )
         case.status = "escalated"
         case.assigned_reviewer_id = actor.id
 
