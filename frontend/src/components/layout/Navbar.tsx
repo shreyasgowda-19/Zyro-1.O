@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ShieldCheck, LogOut, LayoutDashboard, Send, History, PieChart, BarChart3, BookOpen, Globe, Landmark, FileText } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { useLanguage, type Language } from '../../contexts/LanguageContext';
 
 export const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -77,7 +77,7 @@ export const Navbar: React.FC = () => {
                       }`}
                     >
                       <BarChart3 className="w-4 h-4" />
-                      <span>Insights</span>
+                      <span>{t('nav.insights')}</span>
                     </Link>
                     <Link
                       to="/accounts"
@@ -149,15 +149,20 @@ export const Navbar: React.FC = () => {
           {/* Right Controls: Language & Authenticated User Profile */}
           <div className="flex items-center space-x-3">
             {/* Language Switcher */}
-            <button
-              type="button"
-              onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
-              className="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition"
-              title="Switch Language / भाषा बदलें"
-            >
+            <label className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1.5 text-xs font-semibold text-slate-200" title="Language / भाषा / ಭಾಷೆ">
               <Globe className="w-3.5 h-3.5 text-teal-400" />
-              <span>{language === 'en' ? 'हिंदी' : 'English'}</span>
-            </button>
+              <span className="sr-only">Language</span>
+              <select
+                aria-label="Language"
+                value={language}
+                onChange={(event) => setLanguage(event.target.value as Language)}
+                className="max-w-24 cursor-pointer bg-transparent text-slate-100 outline-none"
+              >
+                <option className="text-slate-900" value="en">English</option>
+                <option className="text-slate-900" value="hi">हिन्दी</option>
+                <option className="text-slate-900" value="kn">ಕನ್ನಡ</option>
+              </select>
+            </label>
 
             {user ? (
               <div className="flex items-center space-x-2.5">

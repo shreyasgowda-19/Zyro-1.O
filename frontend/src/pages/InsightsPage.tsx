@@ -125,61 +125,61 @@ export const InsightsPage: React.FC = () => {
       <header className="rounded-2xl bg-slate-900 text-white p-6 sm:p-8 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5">
         <div>
           <div className="inline-flex items-center gap-2 text-teal-300 text-xs font-bold uppercase tracking-wider">
-            <BarChart3 className="w-4 h-4" /> FinShield Insights
+            <BarChart3 className="w-4 h-4" /> FinShield · {t('nav.insights')}
           </div>
-          <h1 className="mt-2 text-2xl sm:text-3xl font-bold">Your money, clearly explained</h1>
+          <h1 className="mt-2 text-2xl sm:text-3xl font-bold">{t('insights.title')}</h1>
           <p className="mt-2 text-sm text-slate-300 max-w-2xl">
-            Spending, savings, cash flow, and payment safety in one view, with the reasons behind each insight.
+            {t('insights.subtitle')}
           </p>
         </div>
         <div className="flex items-center gap-2 self-start lg:self-auto rounded-xl border border-slate-700 bg-slate-800 p-1.5">
-          <button type="button" aria-label="Previous month" onClick={() => setPeriod((value) => changePeriod(value, -1))} className="p-2 rounded-lg hover:bg-slate-700">
+          <button type="button" aria-label={t('insights.previous_month')} onClick={() => setPeriod((value) => changePeriod(value, -1))} className="p-2 rounded-lg hover:bg-slate-700">
             <ChevronLeft className="w-4 h-4" />
           </button>
           <span className="min-w-32 text-center text-sm font-semibold flex items-center justify-center gap-2">
             <Calendar className="w-4 h-4 text-teal-300" /> {periodLabel(period)}
           </span>
-          <button type="button" aria-label="Next month" onClick={() => setPeriod((value) => changePeriod(value, 1))} disabled={period >= currentPeriod()} className="p-2 rounded-lg hover:bg-slate-700 disabled:opacity-40">
+          <button type="button" aria-label={t('insights.next_month')} onClick={() => setPeriod((value) => changePeriod(value, 1))} disabled={period >= currentPeriod()} className="p-2 rounded-lg hover:bg-slate-700 disabled:opacity-40">
             <ChevronRight className="w-4 h-4" />
           </button>
-          <button type="button" onClick={() => setPeriod(currentPeriod())} className="px-2.5 py-2 text-xs font-semibold text-teal-200 hover:bg-slate-700 rounded-lg">This month</button>
+          <button type="button" onClick={() => setPeriod(currentPeriod())} className="px-2.5 py-2 text-xs font-semibold text-teal-200 hover:bg-slate-700 rounded-lg">{t('insights.this_month')}</button>
         </div>
       </header>
 
       {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</div>}
-      {loading && <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-500 flex items-center gap-2"><RefreshCw className="w-4 h-4 animate-spin" /> Updating your insights…</div>}
+      {loading && <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-500 flex items-center gap-2"><RefreshCw className="w-4 h-4 animate-spin" /> {t('insights.updating')}</div>}
 
       <section aria-label="Monthly money summary" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <MetricCard title="Spent this month" value={formatPaise(cashflow?.total_expenses_paise || 0)} note={topCategory ? `${topCategory.category} is your largest category (${topCategory.percentage.toFixed(0)}% of spending).` : 'Based on completed expenses in this period.'} tone="rose" icon={<ArrowUpRight className="w-4 h-4" />} />
-        <MetricCard title="Income recorded" value={formatPaise(cashflow?.total_income_paise || 0)} note="Completed income entries recorded for this month." tone="emerald" icon={<ArrowDownRight className="w-4 h-4" />} />
-        <MetricCard title="Net cash flow" value={formatPaise(cashflow?.net_cashflow_paise || 0)} note={(cashflow?.net_cashflow_paise || 0) >= 0 ? 'Income is greater than completed spending this month.' : 'Completed spending is greater than recorded income this month.'} tone={(cashflow?.net_cashflow_paise || 0) >= 0 ? 'teal' : 'rose'} icon={<TrendingUp className="w-4 h-4" />} />
-        <MetricCard title="Savings rate" value={savingsRate === null ? '—' : `${savingsRate}%`} note={savingsRate === null ? 'Add income to calculate net cash flow as a share of income.' : 'Calculated as (income − completed spending) ÷ income.'} tone="indigo" icon={<PiggyBank className="w-4 h-4" />} />
+        <MetricCard title={t('insights.spent')} value={formatPaise(cashflow?.total_expenses_paise || 0)} note={topCategory ? t('insights.spent_note', { category: topCategory.category, percentage: topCategory.percentage.toFixed(0) }) : t('insights.spent_default')} tone="rose" icon={<ArrowUpRight className="w-4 h-4" />} />
+        <MetricCard title={t('insights.income')} value={formatPaise(cashflow?.total_income_paise || 0)} note={t('insights.income_note')} tone="emerald" icon={<ArrowDownRight className="w-4 h-4" />} />
+        <MetricCard title={t('insights.net')} value={formatPaise(cashflow?.net_cashflow_paise || 0)} note={(cashflow?.net_cashflow_paise || 0) >= 0 ? t('insights.net_positive') : t('insights.net_negative')} tone={(cashflow?.net_cashflow_paise || 0) >= 0 ? 'teal' : 'rose'} icon={<TrendingUp className="w-4 h-4" />} />
+        <MetricCard title={t('insights.savings_rate')} value={savingsRate === null ? '—' : `${savingsRate}%`} note={savingsRate === null ? t('insights.savings_no_income') : t('insights.savings_method')} tone="indigo" icon={<PiggyBank className="w-4 h-4" />} />
       </section>
 
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-5">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-xs">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-base font-bold text-slate-900">Where your spending went</h2>
-              <p className="mt-1 text-xs text-slate-500">Completed expenses by category for {periodLabel(period)}.</p>
+              <h2 className="text-base font-bold text-slate-900">{t('insights.spending_title')}</h2>
+              <p className="mt-1 text-xs text-slate-500">{t('insights.spending_period', { period: periodLabel(period) })}</p>
             </div>
             <span className="text-sm font-bold text-slate-800">{formatPaise(categories?.total_spent_paise || 0)}</span>
           </div>
           {categories?.categories.length ? (
             <SpendingBars items={categories.categories} />
-          ) : <EmptyInsight text={`No completed expenses recorded in ${periodLabel(period)}.`} />}
-          {topCategory && <p className="mt-3 rounded-lg bg-teal-50 px-3 py-2 text-xs text-teal-900"><strong>Why this stands out:</strong> {topCategory.category} accounts for {topCategory.percentage.toFixed(1)}% of your completed spending this month.</p>}
+          ) : <EmptyInsight text={t('insights.no_spending', { period: periodLabel(period) })} />}
+          {topCategory && <p className="mt-3 rounded-lg bg-teal-50 px-3 py-2 text-xs text-teal-900">{t('insights.top_category_reason', { category: topCategory.category, percentage: topCategory.percentage.toFixed(1) })}</p>}
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-xs">
           <div>
-            <h2 className="text-base font-bold text-slate-900">Cash flow through the month</h2>
-            <p className="mt-1 text-xs text-slate-500">Daily income compared with completed expenses. Held payments are excluded until resolved.</p>
+            <h2 className="text-base font-bold text-slate-900">{t('insights.cashflow_title')}</h2>
+            <p className="mt-1 text-xs text-slate-500">{t('insights.cashflow_subtitle')}</p>
           </div>
           {chartCashflow.length ? (
             <CashflowBars data={chartCashflow} period={period} />
-          ) : <EmptyInsight text="No completed income or expense entries to chart for this month." />}
-          <p className="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-700"><strong>How to read this:</strong> net cash flow is recorded income minus completed expenses. A positive result means more income than spending was recorded.</p>
+          ) : <EmptyInsight text={t('insights.no_cashflow')} />}
+          <p className="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-700">{t('insights.cashflow_howto')}</p>
         </div>
       </section>
 
@@ -187,32 +187,32 @@ export const InsightsPage: React.FC = () => {
         <div className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-xs">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2"><PiggyBank className="w-5 h-5 text-teal-700" /> Savings progress</h2>
-              <p className="mt-1 text-xs text-slate-500">Your saved goal contributions and current spendable balance.</p>
+              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2"><PiggyBank className="w-5 h-5 text-teal-700" /> {t('insights.savings_title')}</h2>
+              <p className="mt-1 text-xs text-slate-500">{t('insights.savings_subtitle')}</p>
             </div>
-            <Link to="/budgets" className="text-xs font-semibold text-teal-700 hover:underline">Manage goals <ArrowRight className="inline w-3.5 h-3.5" /></Link>
+            <Link to="/budgets" className="text-xs font-semibold text-teal-700 hover:underline">{t('insights.manage_goals')} <ArrowRight className="inline w-3.5 h-3.5" /></Link>
           </div>
           <div className="mt-4 grid grid-cols-2 gap-3">
-            <div className="rounded-xl bg-teal-50 p-4"><div className="text-xs text-teal-800">Earmarked toward goals</div><div className="mt-1 text-lg font-bold text-teal-950">{formatPaise(goals.reduce((sum, goal) => sum + goal.current_paise, 0))}</div></div>
-            <div className="rounded-xl bg-slate-50 p-4"><div className="text-xs text-slate-600">Available balance</div><div className="mt-1 text-lg font-bold text-slate-900">{formatPaise(balances?.available_balance_paise || 0)}</div></div>
+            <div className="rounded-xl bg-teal-50 p-4"><div className="text-xs text-teal-800">{t('insights.earmarked')}</div><div className="mt-1 text-lg font-bold text-teal-950">{formatPaise(goals.reduce((sum, goal) => sum + goal.current_paise, 0))}</div></div>
+            <div className="rounded-xl bg-slate-50 p-4"><div className="text-xs text-slate-600">{t('insights.available')}</div><div className="mt-1 text-lg font-bold text-slate-900">{formatPaise(balances?.available_balance_paise || 0)}</div></div>
           </div>
           {goals.length ? (
             <div className="mt-4 space-y-4">
               {goals.slice(0, 4).map((goal) => (
                 <div key={goal.id}>
-                  <div className="flex justify-between gap-2 text-xs"><span className="font-semibold text-slate-800">{goal.title}</span><span className="text-slate-600">{goal.progress_percentage.toFixed(0)}% · {formatPaise(goal.current_paise)} / {formatPaise(goal.target_paise)}</span></div>
+                  <div className="flex justify-between gap-2 text-xs"><span className="font-semibold text-slate-800">{goal.title}</span><span className="text-slate-600">{t('insights.goal_progress', { percent: goal.progress_percentage.toFixed(0), current: formatPaise(goal.current_paise), target: formatPaise(goal.target_paise) })}</span></div>
                   <div className="mt-1.5 h-2 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-teal-600" style={{ width: `${Math.max(0, Math.min(100, goal.progress_percentage))}%` }} /></div>
-                  <p className="mt-1 text-[11px] text-slate-500">{formatPaise(Math.max(0, goal.target_paise - goal.current_paise))} remaining to reach this goal.</p>
+                  <p className="mt-1 text-[11px] text-slate-500">{t('insights.goal_remaining', { amount_paise: Math.max(0, goal.target_paise - goal.current_paise) })}</p>
                 </div>
               ))}
             </div>
-          ) : <EmptyInsight text="No savings goals yet. Create one to track progress toward a target." link="/budgets" linkText="Create a savings goal" />}
-          {cashflow && <p className="mt-4 rounded-lg bg-indigo-50 px-3 py-2 text-xs text-indigo-900"><strong>Why:</strong> goal progress reflects contributions recorded in FinShield. This is separate from your available balance; goals are planning earmarks.</p>}
+          ) : <EmptyInsight text={t('insights.no_goals')} link="/budgets" linkText={t('insights.create_goal')} />}
+          {cashflow && <p className="mt-4 rounded-lg bg-indigo-50 px-3 py-2 text-xs text-indigo-900">{t('insights.goals_why')}</p>}
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-xs">
-          <div className="flex items-center gap-2"><ShieldAlert className="w-5 h-5 text-rose-600" /><h2 className="text-base font-bold text-slate-900">Fraud alerts and payment reasons</h2></div>
-          <p className="mt-1 text-xs text-slate-500">Risk signals help explain a review. A high score is a warning, not proof of fraud.</p>
+          <div className="flex items-center gap-2"><ShieldAlert className="w-5 h-5 text-rose-600" /><h2 className="text-base font-bold text-slate-900">{t('insights.fraud_title')}</h2></div>
+          <p className="mt-1 text-xs text-slate-500">{t('insights.fraud_subtitle')}</p>
           {alerts.length > 0 && (
             <div className="mt-4 space-y-2">
               {alerts.slice(0, 4).map((alert) => {
@@ -221,11 +221,11 @@ export const InsightsPage: React.FC = () => {
                   <article key={alert.id} className={`rounded-xl border p-3 ${alert.type === 'fraud' ? 'border-rose-200 bg-rose-50/70' : 'border-amber-200 bg-amber-50/70'}`}>
                     <div className="flex items-start justify-between gap-3">
                       <div className="text-xs font-semibold text-slate-900">{t(alert.title_code, alert.params || {})}</div>
-                      <span className="shrink-0 text-[10px] font-bold uppercase text-slate-500">{alert.type}</span>
+                      <span className="shrink-0 text-[10px] font-bold uppercase text-slate-500">{alert.type === 'fraud' ? t('alert.type.fraud') : t('alert.type.review')}</span>
                     </div>
-                    <p className="mt-1 text-[11px] text-slate-600">{alert.type === 'fraud' ? 'A reviewer confirmed a fraud concern for this payment.' : 'This payment needed a review before or after processing.'}</p>
-                    {linkedRisk?.breakdown.what_would_change.length ? <p className="mt-2 text-[11px] text-slate-700"><strong>Risk signals:</strong> {linkedRisk.breakdown.what_would_change.slice(0, 2).map((reason) => reason.explanation).join(' ')}</p> : null}
-                    {alert.related_transaction_id && <Link to={`/payments/${alert.related_transaction_id}/result`} className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-teal-700 hover:underline">View payment <ArrowRight className="w-3 h-3" /></Link>}
+                    <p className="mt-1 text-[11px] text-slate-600">{alert.type === 'fraud' ? t('insights.confirmed_fraud_reason') : t('insights.review_reason')}</p>
+                    {linkedRisk?.breakdown.what_would_change.length ? <p className="mt-2 text-[11px] text-slate-700"><strong>{t('insights.risk_signals')}</strong> {linkedRisk.breakdown.what_would_change.slice(0, 2).map((reason) => reason.explanation).join(' ')}</p> : null}
+                    {alert.related_transaction_id && <Link to={`/payments/${alert.related_transaction_id}/result`} className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-teal-700 hover:underline">{t('insights.view_payment')} <ArrowRight className="w-3 h-3" /></Link>}
                   </article>
                 );
               })}
@@ -236,29 +236,30 @@ export const InsightsPage: React.FC = () => {
               <article key={transaction.id} className="rounded-xl border border-slate-200 p-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="text-xs font-semibold text-slate-900">{transaction.payee_name || transaction.masked_payee || transaction.category} · {formatPaise(transaction.amount_paise)}</div>
-                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${breakdown.band === 'high' ? 'bg-rose-100 text-rose-800' : breakdown.band === 'medium' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}`}>{breakdown.band} · {breakdown.score}/100</span>
+                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${breakdown.band === 'high' ? 'bg-rose-100 text-rose-800' : breakdown.band === 'medium' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}`}>{t(`pay.risk_band_${breakdown.band}`)} · {breakdown.score}/100</span>
                 </div>
                 {breakdown.what_would_change.length ? (
                   <ul className="mt-2 space-y-1 text-[11px] text-slate-600">
                     {breakdown.what_would_change.slice(0, 2).map((reason) => <li key={reason.rule_code}>• {reason.explanation}</li>)}
                   </ul>
-                ) : <p className="mt-2 text-[11px] text-slate-500 flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> No risk signals fired for this payment.</p>}
+                ) : <p className="mt-2 text-[11px] text-slate-500 flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> {t('insights.no_risk_signals')}</p>}
               </article>
             ))}
           </div>
-          {!alerts.length && !paymentRisks.length && !loading && <EmptyInsight text="No payment risk alerts or scored payments are available yet. New payments will appear here with the signals behind their score." link="/pay" linkText="Make a payment" />}
+          {!alerts.length && !paymentRisks.length && !loading && <EmptyInsight text={t('insights.no_fraud_data')} link="/pay" linkText={t('insights.make_payment')} />}
         </div>
       </section>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-500">
-        <span>Insights use completed ledger entries and your own payment risk assessments. They are not bank statements or financial advice.</span>
-        <Link to="/dashboard" className="inline-flex items-center gap-1 font-semibold text-teal-700 hover:underline"><ArrowLeft className="w-3.5 h-3.5" /> Back to dashboard</Link>
+        <span>{t('insights.disclaimer')}</span>
+        <Link to="/dashboard" className="inline-flex items-center gap-1 font-semibold text-teal-700 hover:underline"><ArrowLeft className="w-3.5 h-3.5" /> {t('insights.back_dashboard')}</Link>
       </div>
     </div>
   );
 };
 
 function SpendingBars({ items }: { items: NonNullable<CategoryAnalytics['categories']> }) {
+  const { t } = useLanguage();
   const visibleItems = items.slice(0, 7);
   const maxAmount = Math.max(1, ...visibleItems.map((item) => item.amount_paise));
   return (
@@ -274,12 +275,13 @@ function SpendingBars({ items }: { items: NonNullable<CategoryAnalytics['categor
           </div>
         </div>
       ))}
-      {items.length > visibleItems.length && <p className="text-[11px] text-slate-500">Showing the top {visibleItems.length} of {items.length} spending categories.</p>}
+      {items.length > visibleItems.length && <p className="text-[11px] text-slate-500">{t('insights.top_categories', { shown: visibleItems.length, total: items.length })}</p>}
     </div>
   );
 }
 
 function CashflowBars({ data, period }: { data: Array<{ day: string; income: number; expenses: number; net: number }>; period: string }) {
+  const { t } = useLanguage();
   const width = 720;
   const height = 250;
   const left = 76;
@@ -294,10 +296,10 @@ function CashflowBars({ data, period }: { data: Array<{ day: string; income: num
   const labelEvery = Math.max(1, Math.ceil(data.length / 10));
 
   return (
-    <div className="mt-4" role="img" aria-label={`Daily income and completed expenses for ${period}`}>
+    <div className="mt-4" role="img" aria-label={t('insights.cashflow_aria', { period: periodLabel(period) })}>
       <div className="mb-2 flex items-center justify-end gap-4 text-[11px] text-slate-600">
-        <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-sm bg-teal-700" /> Income</span>
-        <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-sm bg-rose-600" /> Expenses</span>
+        <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-sm bg-teal-700" /> {t('insights.income_legend')}</span>
+        <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-sm bg-rose-600" /> {t('insights.expenses_legend')}</span>
       </div>
       <svg viewBox={`0 0 ${width} ${height}`} className="h-64 w-full" preserveAspectRatio="none" aria-hidden="true">
         {[0, 1, 2, 3].map((step) => {
@@ -317,7 +319,7 @@ function CashflowBars({ data, period }: { data: Array<{ day: string; income: num
             {showLabel && <text x={center} y={bottom + 18} textAnchor="middle" fontSize="10" fill="#64748b">{point.day}</text>}
           </g>;
         })}
-        <text x={left + plotWidth / 2} y={height - 4} textAnchor="middle" fontSize="10" fill="#64748b">Day of month</text>
+        <text x={left + plotWidth / 2} y={height - 4} textAnchor="middle" fontSize="10" fill="#64748b">{t('insights.day_of_month')}</text>
       </svg>
     </div>
   );
