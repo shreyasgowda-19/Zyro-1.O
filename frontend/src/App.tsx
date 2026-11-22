@@ -11,6 +11,7 @@ import { ReviewQueuePage } from './pages/ReviewQueuePage';
 import { NewPaymentPage } from './pages/NewPaymentPage';
 import { PaymentResultPage } from './pages/PaymentResultPage';
 import { BudgetsPage } from './pages/BudgetsPage';
+import { InsightsPage } from './pages/InsightsPage';
 import { LearnPage } from './pages/LearnPage';
 import { AccountsPage } from './pages/AccountsPage';
 import { RegisterPage } from './pages/RegisterPage';
@@ -179,6 +180,14 @@ function AppContent() {
             element={
               <ProtectedRoute roles={['customer']}>
                 <BudgetsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/insights"
+            element={
+              <ProtectedRoute roles={['customer']}>
+                <InsightsPage />
               </ProtectedRoute>
             }
           />

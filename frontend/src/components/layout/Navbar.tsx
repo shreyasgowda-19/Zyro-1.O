@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ShieldCheck, LogOut, LayoutDashboard, Send, History, PieChart, BookOpen, Globe, Landmark, FileText } from 'lucide-react';
+import { ShieldCheck, LogOut, LayoutDashboard, Send, History, PieChart, BarChart3, BookOpen, Globe, Landmark, FileText } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 
@@ -69,6 +69,15 @@ export const Navbar: React.FC = () => {
                     >
                       <PieChart className="w-4 h-4" />
                       <span>{t('nav.budgets')}</span>
+                    </Link>
+                    <Link
+                      to="/insights"
+                      className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition ${
+                        location.pathname === '/insights' ? 'bg-slate-800 text-teal-400 font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                      }`}
+                    >
+                      <BarChart3 className="w-4 h-4" />
+                      <span>Insights</span>
                     </Link>
                     <Link
                       to="/accounts"
